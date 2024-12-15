@@ -1,8 +1,7 @@
+import { Button, Form, Input, message, Radio, Select } from "antd";
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Select, Table, message, Radio } from "antd";
 import { provincesService } from "../../../services/provincesService";
 import { vehicleTypeService } from "../../../services/vehicleTypeService";
-import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -47,26 +46,24 @@ const OrderForm = () => {
     return province ? province.code : "";
   };
 
-  const handleVehicleChange = (e) => {
-    setSelectedVehicle(e.target.value);
-    console.log("Selected Vehicle:", e.target.value);
-  };
-
-  //   const generateTourId = (departure, destination, vehicleType) => {
-  //     const depCode = getProvinceCode(departure);
-  //     const destCode = getProvinceCode(destination);
-
-  //     const timestamp = Date.now().toString().slice(-5);
-  //     const randomNum = Math.floor(100 + Math.random() * 900);
-  //     const uniqueOrder = `${timestamp}${randomNum}`;
-
-  //     vehicleType = localStorage.getItem("selectedOption");
-
-  //     const parsedItem = JSON.parse(vehicleType);
-  //     const code = parsedItem.code; // Access the "code" field
-
-  //     return `${depCode}${destCode}-${uniqueOrder}-${randomNum}${code}`;
+  //   const handleVehicleChange = (e) => {
+  //     const selectedOption = vehicleType.find(
+  //       (item) => item._id === e.target.value
+  //     );
+  //     setSelectedVehicle(selectedOption._id);
   //   };
+
+  // Handler to update selected vehicle code
+  const handleVehicleChange = (e) => {
+    const selectedId = e.target.value;
+
+    // Find the corresponding vehicle object based on selected _id
+    const selectedVehicle = vehicleType.find((item) => item._id === selectedId);
+
+    if (selectedVehicle) {
+      setSelectedVehicle(selectedVehicle.code);
+    }
+  };
 
   const generateTourId = (departure, destination) => {
     const depCode = getProvinceCode(departure);
@@ -76,30 +73,14 @@ const OrderForm = () => {
     const randomNum = Math.floor(100 + Math.random() * 900);
     const uniqueOrder = `${timestamp}${randomNum}`;
 
-    // Attempt to get the vehicle type from localStorage
-    const vehicleTypeFromLocalStorage = localStorage.getItem("selectedOption");
-
-    if (!vehicleTypeFromLocalStorage) {
-      console.error("Vehicle type is missing in localStorage.");
-      return null; // Or handle this case as needed
-    }
-
-    const parsedItem = JSON.parse(vehicleTypeFromLocalStorage);
-    if (!parsedItem || !parsedItem.code) {
-      console.error("Vehicle type code is missing in the stored item.");
-      return null; // Or handle this case as needed
-    }
-
-    const code = parsedItem.code; // Access the "code" field
-
-    return `${depCode}${destCode}-${uniqueOrder}-${randomNum}${code}`;
+    return `${depCode}${destCode}-${uniqueOrder}-${randomNum}${selectedVehicle}`;
   };
 
   const handleAddOrder = async (values) => {
     const generatedId = await generateTourId(
       values.departing,
       values.arriving,
-      selectedVehicle.code
+      selectedVehicle
     );
     const newOrder = {
       orderId: generatedId,
@@ -127,27 +108,10 @@ const OrderForm = () => {
       <h2 className="text-2xl font-bold mb-6">Nhập Thông Tin Đơn Hàng</h2>
 
       <div className="flex justify-center mt-20">
-        <Radio.Group
-          onChange={handleVehicleChange}
-          value={selectedVehicle}
-          className="space-y-4"
-        >
+        <Radio.Group onChange={handleVehicleChange} className="space-y-4">
           {vehicleType.map((item) => (
             <Radio key={item._id} value={item._id} className="block">
-              <div
-                onClick={() => {
-                  localStorage.setItem(
-                    "selectedOption",
-                    JSON.stringify({
-                      code: item.code ? item.code : null,
-                      id: item._id ? item._id : null,
-                    })
-                  );
-                }}
-                className="card"
-              >
-                {item.type}
-              </div>
+              <div className="card">{item.type}</div>
             </Radio>
           ))}
         </Radio.Group>
