@@ -1,7 +1,8 @@
-import { Table } from "antd";
+import { Button, message, Table } from "antd";
+import { useNavigate } from "react-router-dom";
 
 export default function OrderList() {
-
+  const navigate = useNavigate(); // React Router navigation hook
 
   const columns = [
     {
@@ -44,10 +45,24 @@ export default function OrderList() {
       dataIndex: "orderStatus",
       key: "orderStatus",
     },
+    {
+      title: "Báo giá",
+      key: "quotation",
+      render: (text, record) => (
+        <Button type="primary" onClick={() => handleQuotation(record.orderId)}>
+          Tạo báo giá
+        </Button>
+      ),
+    },
   ];
+  const handleQuotation = (orderId) => {
+    // Logic for handling quotation creation
+    message.info(`Tạo báo giá cho đơn hàng: ${orderId}`);
+    navigate(`/quote/${orderId}`);
 
+    // You can open a modal or navigate to another page with the orderId here.
+  };
   const orders = JSON.parse(localStorage.getItem("orders")) || [];
-
 
   return (
     <>

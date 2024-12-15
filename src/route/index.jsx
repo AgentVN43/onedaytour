@@ -1,6 +1,6 @@
-import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import QuotationForm from "../components/Annk/Form/QuotationForm";
 import AdminDashboard from "../components/Dashboard";
-import OrderForm from "../components/Annk/Form/OrderForm";
 
 export default function MainRoute() {
   return (
@@ -8,6 +8,7 @@ export default function MainRoute() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<AdminDashboard />} />
+          <Route path="/quote/:orderId" element={<QuotationForm />} />
         </Routes>
       </BrowserRouter>
     </>

@@ -87,7 +87,6 @@ const OrderForm = () => {
       quotes: null,
       orderStatus: "Pending Quote Selection",
     };
-
     const updatedOrders = [...orders, newOrder];
     setOrders(updatedOrders);
     localStorage.setItem("orders", JSON.stringify(updatedOrders));
@@ -96,7 +95,49 @@ const OrderForm = () => {
     form.resetFields();
   };
 
- 
+  const columns = [
+    {
+      title: "Mã đơn hàng",
+      dataIndex: "orderId",
+      key: "orderId",
+    },
+    {
+      title: "Tên khách hàng",
+      dataIndex: ["customer", "name"],
+      key: "customerName",
+    },
+    {
+      title: "Email",
+      dataIndex: ["customer", "email"],
+      key: "email",
+    },
+    {
+      title: "Số điện thoại",
+      dataIndex: ["customer", "phone"],
+      key: "phone",
+    },
+    {
+      title: "Zalo",
+      dataIndex: ["customer", "zalo"],
+      key: "zalo",
+    },
+    {
+      title: "Khởi hành",
+      dataIndex: ["customer", "departing"],
+      key: "departing",
+    },
+    {
+      title: "Điểm đến",
+      dataIndex: ["customer", "arriving"],
+      key: "arriving",
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "orderStatus",
+      key: "orderStatus",
+    },
+  ];
+
   return (
     <div className="max-w-full mx-auto p-5 bg-white shadow-md rounded-lg">
       <h2 className="text-2xl font-bold mb-6">Nhập Thông Tin Đơn Hàng</h2>
@@ -216,7 +257,7 @@ const OrderForm = () => {
         </Form.Item>
       </Form>
 
-    
+
     </div>
   );
 };
