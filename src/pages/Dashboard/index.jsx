@@ -1,13 +1,13 @@
 import { CarOutlined, HomeOutlined, UserOutlined } from "@ant-design/icons";
 import { Layout, Tabs } from "antd";
 import { useState } from "react";
-import AccommodationManagement from "../Accommodation";
-import AnNK from "../Annk";
-import GuideServiceManagement from "../GuideService";
-import MealManagement from "../Meal";
-import Province from "../Province";
-import TourQuotation from "../TourQuotation";
-import TransportationManagement from "../Transportation";
+import AccommodationManagement from "../../components/Accommodation";
+import AnNK from "../../components/Annk";
+import GuideServiceManagement from "../../components/GuideService";
+import MealManagement from "../../components/Meal";
+import Province from "../../components/Province";
+import TourQuotation from "../../components/TourQuotation";
+import TransportationManagement from "../../components/Transportation";
 
 const { Content } = Layout;
 

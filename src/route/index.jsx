@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import QuotationForm from "../components/Annk/Form/QuotationForm";
-import AdminDashboard from "../components/Dashboard";
+import AdminDashboard from "../pages/Dashboard";
 
 export default function MainRoute() {
   return (

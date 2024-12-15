@@ -12,6 +12,7 @@ const OrderForm = () => {
   const [provinces, setProvinces] = useState([]);
   const [vehicleType, setVehicleType] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+  console.log("🚀 ~ OrderForm ~ selectedVehicle:", selectedVehicle)
 
   const GetAllProvince = async () => {
     try {
@@ -96,6 +97,8 @@ const OrderForm = () => {
   };
 
   const handleAddOrder = async (values) => {
+    console.log("🚀 ~ handleAddOrder ~ values:", values)
+    console.log("🚀 ~ handleAddOrder ~ values:", values.passengers)
     const generatedId = await generateTourId(
       values.departing,
       values.arriving,
@@ -110,6 +113,7 @@ const OrderForm = () => {
         zalo: values.zalo,
         departing: values.departing,
         arriving: values.arriving,
+        passengers:values.passengers
       },
       quotes: null,
       orderStatus: "Pending Quote Selection",
@@ -159,9 +163,6 @@ const OrderForm = () => {
         onFinish={handleAddOrder}
         autoComplete="off"
       >
-        <Form.Item label="Mã đơn hàng" name="orderId">
-          <Input placeholder="Nhập mã đơn hàng" />
-        </Form.Item>
         <div className="grid grid-cols-2 gap-5">
           <Form.Item
             label="Tên khách hàng"
@@ -234,6 +235,81 @@ const OrderForm = () => {
             </Select>
           </Form.Item>
         </div>
+        <div>
+          <p className='text-start'>Sô lượng hành khách</p>
+          <div className='grid grid-cols-3 gap-5'>
+            <Form.Item
+              label="Người lớn (12 tuổi trở lên)"
+              name={["passengers", "adults"]}
+              rules={[
+                {
+                  required: true,
+                  message: 'Vui lòng nhập số lượng hợp lệ!',
+                  validator: (_, value) => {
+                    if (!value) {
+                      return Promise.reject(new Error('Vui lòng nhập số lượng!'));
+                    }
+                    if (isNaN(value) || value <= 0) {
+                      return Promise.reject(new Error('Số lượng phải là số dương!'));
+                    }
+                    return Promise.resolve();
+                  },
+                },
+              ]}
+            >
+              <Input placeholder='Nhập số lượng' type="number" step="1" className="w-full" />
+            </Form.Item>
+            <Form.Item
+              label="Trẻ em (dưới 12 tuổi)"
+              name={["passengers", "childrenUnder12"]}
+              rules={[
+                {
+                  required: true,
+                  message: 'Vui lòng nhập số lượng hợp lệ!',
+                  validator: (_, value) => {
+                    if (!value) {
+                      return Promise.reject(new Error('Vui lòng nhập số lượng!'));
+                    }
+                    if (isNaN(value) || value <= 0) {
+                      return Promise.reject(new Error('Số lượng phải là số dương!'));
+                    }
+                    return Promise.resolve();
+                  },
+                },
+              ]}
+            >
+              <Input placeholder='Nhập số lượng' type="number" step="1" className="w-full" />
+            </Form.Item>
+            <Form.Item
+              label="Trẻ nhỏ (dưới 5 tuổi)"
+              name={["passengers", "childrenUnder2"]}
+              rules={[
+                {
+                  required: true,
+                  message: 'Vui lòng nhập số lượng hợp lệ!',
+                  validator: (_, value) => {
+                    if (!value) {
+                      return Promise.reject(new Error('Vui lòng nhập số lượng!'));
+                    }
+                    if (isNaN(value) || value <= 0) {
+                      return Promise.reject(new Error('Số lượng phải là số dương!'));
+                    }
+                    return Promise.resolve();
+                  },
+                },
+              ]}
+            >
+              <Input placeholder='Nhập số lượng' type="number" step="1" className="w-full" />
+            </Form.Item>
+          </div>
+        </div>
+
+        <Form.Item
+          label="Lưu ý"
+          name="specialRequirements"
+        >
+          <Input.TextArea />
+        </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" className="w-full">
             Thêm Đơn Hàng
