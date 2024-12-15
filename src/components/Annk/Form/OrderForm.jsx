@@ -52,7 +52,23 @@ const OrderForm = () => {
     console.log("Selected Vehicle:", e.target.value);
   };
 
-  const generateTourId = (departure, destination, vehicleType) => {
+  //   const generateTourId = (departure, destination, vehicleType) => {
+  //     const depCode = getProvinceCode(departure);
+  //     const destCode = getProvinceCode(destination);
+
+  //     const timestamp = Date.now().toString().slice(-5);
+  //     const randomNum = Math.floor(100 + Math.random() * 900);
+  //     const uniqueOrder = `${timestamp}${randomNum}`;
+
+  //     vehicleType = localStorage.getItem("selectedOption");
+
+  //     const parsedItem = JSON.parse(vehicleType);
+  //     const code = parsedItem.code; // Access the "code" field
+
+  //     return `${depCode}${destCode}-${uniqueOrder}-${randomNum}${code}`;
+  //   };
+
+  const generateTourId = (departure, destination) => {
     const depCode = getProvinceCode(departure);
     const destCode = getProvinceCode(destination);
 
@@ -60,16 +76,27 @@ const OrderForm = () => {
     const randomNum = Math.floor(100 + Math.random() * 900);
     const uniqueOrder = `${timestamp}${randomNum}`;
 
-    vehicleType = localStorage.getItem("selectedOption");
+    // Attempt to get the vehicle type from localStorage
+    const vehicleTypeFromLocalStorage = localStorage.getItem("selectedOption");
 
-    const parsedItem = JSON.parse(vehicleType);
+    if (!vehicleTypeFromLocalStorage) {
+      console.error("Vehicle type is missing in localStorage.");
+      return null; // Or handle this case as needed
+    }
+
+    const parsedItem = JSON.parse(vehicleTypeFromLocalStorage);
+    if (!parsedItem || !parsedItem.code) {
+      console.error("Vehicle type code is missing in the stored item.");
+      return null; // Or handle this case as needed
+    }
+
     const code = parsedItem.code; // Access the "code" field
 
     return `${depCode}${destCode}-${uniqueOrder}-${randomNum}${code}`;
   };
 
-  const handleAddOrder = (values) => {
-    const generatedId = generateTourId(
+  const handleAddOrder = async (values) => {
+    const generatedId = await generateTourId(
       values.departing,
       values.arriving,
       selectedVehicle.code
@@ -94,49 +121,6 @@ const OrderForm = () => {
     message.success("Đơn hàng đã được thêm!");
     form.resetFields();
   };
-
-  const columns = [
-    {
-      title: "Mã đơn hàng",
-      dataIndex: "orderId",
-      key: "orderId",
-    },
-    {
-      title: "Tên khách hàng",
-      dataIndex: ["customer", "name"],
-      key: "customerName",
-    },
-    {
-      title: "Email",
-      dataIndex: ["customer", "email"],
-      key: "email",
-    },
-    {
-      title: "Số điện thoại",
-      dataIndex: ["customer", "phone"],
-      key: "phone",
-    },
-    {
-      title: "Zalo",
-      dataIndex: ["customer", "zalo"],
-      key: "zalo",
-    },
-    {
-      title: "Khởi hành",
-      dataIndex: ["customer", "departing"],
-      key: "departing",
-    },
-    {
-      title: "Điểm đến",
-      dataIndex: ["customer", "arriving"],
-      key: "arriving",
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "orderStatus",
-      key: "orderStatus",
-    },
-  ];
 
   return (
     <div className="max-w-full mx-auto p-5 bg-white shadow-md rounded-lg">
@@ -256,8 +240,6 @@ const OrderForm = () => {
           </Button>
         </Form.Item>
       </Form>
-
-
     </div>
   );
 };
