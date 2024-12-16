@@ -1,12 +1,16 @@
+import { Button, DatePicker, Form, Input, message, Radio, Select } from "antd";
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Select, Table, message, Radio } from "antd";
 import { provincesService } from "../../../services/provincesService";
 import { vehicleTypeService } from "../../../services/vehicleTypeService";
-import { useNavigate } from "react-router-dom";
+import { generateTourId } from "../../../utils/generateTourId";
+import VehicleOption from "../../vehicleOption";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
-const OrderForm = () => {
+const OrderForm = ({ info }) => {
+  console.log("🚀 ~ OrderForm ~ info:", info)
+  const { RangePicker } = DatePicker;
   const [form] = Form.useForm();
   const [orders, setOrders] = useState([]);
   const [provinces, setProvinces] = useState([]);
@@ -48,61 +52,12 @@ const OrderForm = () => {
     return province ? province.code : "";
   };
 
-  const handleVehicleChange = (e) => {
-    setSelectedVehicle(e.target.value);
-    console.log("Selected Vehicle:", e.target.value);
-  };
-
-  //   const generateTourId = (departure, destination, vehicleType) => {
-  //     const depCode = getProvinceCode(departure);
-  //     const destCode = getProvinceCode(destination);
-
-  //     const timestamp = Date.now().toString().slice(-5);
-  //     const randomNum = Math.floor(100 + Math.random() * 900);
-  //     const uniqueOrder = `${timestamp}${randomNum}`;
-
-  //     vehicleType = localStorage.getItem("selectedOption");
-
-  //     const parsedItem = JSON.parse(vehicleType);
-  //     const code = parsedItem.code; // Access the "code" field
-
-  //     return `${depCode}${destCode}-${uniqueOrder}-${randomNum}${code}`;
-  //   };
-
-  const generateTourId = (departure, destination) => {
-    const depCode = getProvinceCode(departure);
-    const destCode = getProvinceCode(destination);
-
-    const timestamp = Date.now().toString().slice(-5);
-    const randomNum = Math.floor(100 + Math.random() * 900);
-    const uniqueOrder = `${timestamp}${randomNum}`;
-
-    // Attempt to get the vehicle type from localStorage
-    const vehicleTypeFromLocalStorage = localStorage.getItem("selectedOption");
-
-    if (!vehicleTypeFromLocalStorage) {
-      console.error("Vehicle type is missing in localStorage.");
-      return null; // Or handle this case as needed
-    }
-
-    const parsedItem = JSON.parse(vehicleTypeFromLocalStorage);
-    if (!parsedItem || !parsedItem.code) {
-      console.error("Vehicle type code is missing in the stored item.");
-      return null; // Or handle this case as needed
-    }
-
-    const code = parsedItem.code; // Access the "code" field
-
-    return `${depCode}${destCode}-${uniqueOrder}-${randomNum}${code}`;
-  };
-
   const handleAddOrder = async (values) => {
-    console.log("🚀 ~ handleAddOrder ~ values:", values)
-    console.log("🚀 ~ handleAddOrder ~ values:", values.passengers)
     const generatedId = await generateTourId(
       values.departing,
       values.arriving,
-      selectedVehicle.code
+      selectedVehicle,
+      getProvinceCode,
     );
     const newOrder = {
       orderId: generatedId,
@@ -113,13 +68,16 @@ const OrderForm = () => {
         zalo: values.zalo,
         departing: values.departing,
         arriving: values.arriving,
-        passengers:values.passengers
+        departureDate: values.date ? values.date[0].format("YYYY-MM-DD") : "",
+        returnDate: values.date ? values.date[1].format("YYYY-MM-DD") : "",
+        passengers: values.passengers
       },
       quotes: null,
       orderStatus: "Pending Quote Selection",
     };
     const updatedOrders = [...orders, newOrder];
     setOrders(updatedOrders);
+    localStorage.setItem("order", JSON.stringify(newOrder));
     localStorage.setItem("orders", JSON.stringify(updatedOrders));
 
     message.success("Đơn hàng đã được thêm!");
@@ -128,17 +86,15 @@ const OrderForm = () => {
 
   return (
     <div className="max-w-full mx-auto p-5 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold mb-6">Nhập Thông Tin Đơn Hàng</h2>
+      <h2 className="text-2xl font-bold mb-6">
+        {info ? <span>Thông Tin Đơn Hàng</span> : <span>Nhập Thông Tin Đơn Hàng</span>}
+      </h2>
 
-      <div className="flex justify-center mt-20">
-        <Radio.Group
-          onChange={handleVehicleChange}
-          value={selectedVehicle}
-          className="space-y-4"
-        >
-          {vehicleType.map((item) => (
-            <Radio key={item._id} value={item._id} className="block">
-              <div
+      {!info &&
+        <div className="flex justify-center my-10 gap-20">
+          {
+            vehicleType.map((item) => (
+              <div key={item._id}
                 onClick={() => {
                   localStorage.setItem(
                     "selectedOption",
@@ -147,21 +103,44 @@ const OrderForm = () => {
                       id: item._id ? item._id : null,
                     })
                   );
-                }}
-                className="card"
-              >
-                {item.type}
-              </div>
-            </Radio>
-          ))}
-        </Radio.Group>
-      </div>
 
+                  setSelectedVehicle(item.code)
+                }}
+                className={`${selectedVehicle === item.code ? 'bg-slate-800 border border-black' : 'bg-slate-100'} rounded-2xl`}
+              >
+                <VehicleOption item={item} />
+              </div>
+            ))
+          }
+        </div>
+      }
       <Form
         form={form}
         layout="vertical"
         onFinish={handleAddOrder}
         autoComplete="off"
+        initialValues={{
+          customerName: info?.customer.name,
+          email: info?.customer.email,
+          phone: info?.customer.phone,
+          zalo: info?.customer.zalo,
+          departing: info?.customer.departing,
+          arriving: info?.customer.arriving,
+          date: [
+            info?.customer.departureDate
+              ? dayjs(info.customer.departureDate, "YYYY-MM-DD")
+              : null,
+            info?.customer.returnDate
+              ? dayjs(info.customer.returnDate, "YYYY-MM-DD")
+              : null,
+          ],
+          passengers: {
+            adults: info?.customer.passengers?.adults,
+            childrenUnder12: info?.customer.passengers?.childrenUnder12,
+            childrenUnder2: info?.customer.passengers?.childrenUnder2,
+          },
+          specialRequirements: info?.customer.specialRequirements,
+        }}
       >
         <div className="grid grid-cols-2 gap-5">
           <Form.Item
@@ -235,6 +214,16 @@ const OrderForm = () => {
             </Select>
           </Form.Item>
         </div>
+        <Form.Item
+          label="Ngày đi - Ngày về"
+          name="date"
+          rules={[{ required: true, message: 'Vui lòng chọn thời gian!' }]}
+        >
+          <RangePicker
+            placeholder={['Nhập ngày bắt đầu', 'Nhập ngày kết thúc']}
+            className="w-full"
+          />
+        </Form.Item>
         <div>
           <p className='text-start'>Sô lượng hành khách</p>
           <div className='grid grid-cols-3 gap-5'>
@@ -312,7 +301,7 @@ const OrderForm = () => {
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" className="w-full">
-            Thêm Đơn Hàng
+            {info ? <span>Xác nhận thông tin</span> : <span>Lưu thông tin</span>}
           </Button>
         </Form.Item>
       </Form>

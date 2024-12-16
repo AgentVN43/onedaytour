@@ -8,11 +8,15 @@ import MealManagement from "../../components/Meal";
 import Province from "../../components/Province";
 import TourQuotation from "../../components/TourQuotation";
 import TransportationManagement from "../../components/Transportation";
+import TourPage from "../TourPage";
+import { matchPath, useLocation } from "react-router-dom";
+import QuotationForm from "../../components/Annk/Form/QuotationForm";
 
 const { Content } = Layout;
-
 // Main Admin Dashboard
 const AdminDashboard = () => {
+  const location = useLocation();
+  const isQuotePage = matchPath({ path: "/quote/:id", end: true }, location.pathname);
   const [activeKey, setActiveKey] = useState("1");
 
   const tabItems = [
@@ -55,7 +59,7 @@ const AdminDashboard = () => {
       label: "AnNK Test",
       key: "7",
       icon: <UserOutlined />,
-      children: <AnNK />,
+      children: isQuotePage ? <QuotationForm /> : <AnNK />,
     },
   ];
 
@@ -64,6 +68,7 @@ const AdminDashboard = () => {
       <Content style={{ padding: "24px" }}>
         <Tabs
           type="card"
+          tabPosition={'left'}
           items={tabItems}
           activeKey={activeKey}
           onChange={setActiveKey}

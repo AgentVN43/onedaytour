@@ -3,8 +3,8 @@ import { Button, Drawer, Space, Steps, message, theme } from "antd";
 import { provincesService } from "../../services/provincesService";
 
 import { useEffect, useState } from "react";
-import BreadcrumbC from "./Breadcrumb";
-import TransactionForm from "../FormInfo";
+import BreadcrumbC from "../Breadcrumb";
+import TransactionForm from "../Annk/Form/OrderForm";
 import TransportationManagement from "../Transportation";
 
 export default function Quotation() {

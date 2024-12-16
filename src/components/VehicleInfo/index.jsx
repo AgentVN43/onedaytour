@@ -3,17 +3,16 @@ import React, { useEffect, useState } from "react";
 import { vehicleService } from "../../services/vehicleService";
 const { Title, Text } = Typography;
 
-export default function VehicleInfo({ infoTraveler, setInfoTraveler }) {
-  console.log("🚀 ~ VehicleInfo ~ infoTraveler:", infoTraveler)
+export default function VehicleInfo() {
   const [passengers, setPassengers] = useState("");
   const [vehicle, setVehicle] = useState([]);
   const [result, setResult] = useState(null);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const infoTraveler = JSON.parse(localStorage.getItem("order"));
   const calculateTotal = () => {
     const total =
-      parseInt(infoTraveler.passengers.adults) +
-      parseInt(infoTraveler.passengers.childrenUnder12);
+      parseInt(infoTraveler.customer.passengers.adults) +
+      parseInt(infoTraveler.customer.passengers.childrenUnder12);
     setPassengers(total);
     return total;
   };
@@ -135,7 +134,7 @@ export default function VehicleInfo({ infoTraveler, setInfoTraveler }) {
           })),
       };
 
-      setInfoTraveler(confirmedData);
+      localStorage.setItem("order", JSON.stringify(confirmedData));
 
       console.log("Vehicle confirm:", confirmedData);
     }
@@ -167,7 +166,7 @@ export default function VehicleInfo({ infoTraveler, setInfoTraveler }) {
 
   return (
     <>
-    {/* Vehicle Optimizer */}
+      {/* Vehicle Optimizer */}
       <Card style={{ width: "100%", maxWidth: 800, margin: "0 auto" }}>
         <Title level={3} style={{ marginBottom: 24 }}>
           Vehicle Optimizer
