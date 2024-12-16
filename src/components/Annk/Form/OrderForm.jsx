@@ -2,6 +2,7 @@ import { Button, DatePicker, Form, Input, message, Radio, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import { provincesService } from "../../../services/provincesService";
 import { vehicleTypeService } from "../../../services/vehicleTypeService";
+import { orderService } from "../../../services/orderService";
 import { generateTourId } from "../../../utils/generateTourId";
 import VehicleOption from "../../vehicleOption";
 import dayjs from "dayjs";
@@ -9,14 +10,12 @@ import dayjs from "dayjs";
 const { Option } = Select;
 
 const OrderForm = ({ info }) => {
-  console.log("🚀 ~ OrderForm ~ info:", info)
   const { RangePicker } = DatePicker;
   const [form] = Form.useForm();
   const [orders, setOrders] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [vehicleType, setVehicleType] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
-  console.log("🚀 ~ OrderForm ~ selectedVehicle:", selectedVehicle)
 
   const GetAllProvince = async () => {
     try {
@@ -84,6 +83,34 @@ const OrderForm = ({ info }) => {
     form.resetFields();
   };
 
+  const handleUpdateUpdateOrder = async (values) => {
+    const generatedId = info.generatedId
+    const newOrder = {
+      orderId: generatedId,
+      customer: {
+        name: values.customerName,
+        phone: values.phone,
+        email: values.email,
+        zalo: values.zalo,
+        departing: values.departing,
+        arriving: values.arriving,
+        departureDate: values.date ? values.date[0].format("YYYY-MM-DD") : "",
+        returnDate: values.date ? values.date[1].format("YYYY-MM-DD") : "",
+        passengers: values.passengers
+      },
+      quotes: null,
+      orderStatus: "Pending Quote Selection",
+    };
+
+    const updatedOrders = [...orders, newOrder];
+    setOrders(updatedOrders);
+    localStorage.setItem("order", JSON.stringify(newOrder));
+    localStorage.setItem("orders", JSON.stringify(updatedOrders));
+
+    message.success("Đơn hàng đã được thêm!");
+    form.resetFields();
+  };
+
   return (
     <div className="max-w-full mx-auto p-5 bg-white shadow-md rounded-lg">
       <h2 className="text-2xl font-bold mb-6">
@@ -117,7 +144,7 @@ const OrderForm = ({ info }) => {
       <Form
         form={form}
         layout="vertical"
-        onFinish={handleAddOrder}
+        onFinish={info ? handleUpdateUpdateOrder : handleAddOrder}
         autoComplete="off"
         initialValues={{
           customerName: info?.customer.name,
