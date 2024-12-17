@@ -8,16 +8,16 @@ export default function VehicleInfo() {
   const [vehicle, setVehicle] = useState([]);
   const [result, setResult] = useState(null);
 
-  const infoTraveler = JSON.parse(localStorage.getItem("order"));
+  const tourInfo = JSON.parse(localStorage.getItem("tourInfo"));
   const calculateTotal = () => {
     const total =
-      parseInt(infoTraveler.customer.passengers.adults) +
-      parseInt(infoTraveler.customer.passengers.childrenUnder12);
+      parseInt(tourInfo?.passengers?.adults) +
+      parseInt(tourInfo?.passengers?.childrenUnder11);
     setPassengers(total);
     return total;
   };
 
-  const vehicleID = JSON.parse(localStorage.getItem("selectedOption")).id;
+  const vehicleID = JSON.parse(localStorage.getItem("orderInfo")).vehicleId;
 
   const GetAllVehicle = async (id) => {
     try {

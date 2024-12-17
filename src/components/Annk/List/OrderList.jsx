@@ -1,9 +1,62 @@
-import { Button, message, Table } from "antd";
+import { Button, Form, message, Modal, Table } from "antd";
 import { useNavigate } from "react-router-dom";
+import { orderService } from "../../../services/orderService";
+import { useEffect, useState } from "react";
+import InfoTour from "../Form/InfoTour";
 
 export default function OrderList() {
+  const [orders, setOrders] = useState([])
   const navigate = useNavigate(); // React Router navigation hook
 
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm(); // Form instance
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+
+  
+  const getOneOrder = async (orderId) => {
+    const res = await orderService.getById(orderId)
+    if (res && res.data) {
+      localStorage.setItem('orderInfo', JSON.stringify(res.data))
+    }
+  }
+
+  const getAllOrders = async () => {
+    try {
+      const res = await orderService.getAll();
+      if (res && res.data) {
+        setOrders(res.data);
+      }
+    } catch (error) {
+      console.error("Error creating vehicle:", error);
+      alert("Failed to create vehicle.");
+    }
+  }
+  // Modal Handlers
+  const showModal = (orderId) => {
+    setIsModalOpen(true);
+    setSelectedOrderId(orderId)
+  };
+
+  const handleOk = (orderId) => {
+    form.validateFields()
+      .then((values) => {
+        console.log("Form Values:", values); // Handle form submission
+        localStorage.setItem('tourInfo', JSON.stringify(values))
+        handleQuotation(orderId)
+        getOneOrder(orderId)
+        setIsModalOpen(false);
+        form.resetFields(); // Reset form after submission
+      })
+      .catch((errorInfo) => {
+        console.log("Validation Failed:", errorInfo);
+      });
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    form.resetFields(); // Reset fields when modal is closed
+  };
   const columns = [
     {
       title: "Mã đơn hàng",
@@ -49,9 +102,25 @@ export default function OrderList() {
       title: "Báo giá",
       key: "quotation",
       render: (text, record) => (
-        <Button type="primary" onClick={() => handleQuotation(record.orderId)}>
-          Tạo báo giá
-        </Button>
+        <>
+          <Button type="primary" onClick={() => showModal(record.orderId)}>
+            Tạo báo giá
+          </Button>
+          <Modal
+            open={isModalOpen}
+            onOk={() => handleOk(selectedOrderId)}
+            onCancel={handleCancel}
+            okText="Submit"
+            cancelText="Cancel"
+            width={'50%'}
+          >
+            <div className="relative -mx-6 -my-5">
+              <InfoTour form={form} />
+            </div>
+          </Modal>
+        </>
+
+
       ),
     },
   ];
@@ -59,11 +128,13 @@ export default function OrderList() {
     // Logic for handling quotation creation
     message.info(`Tạo báo giá cho đơn hàng: ${orderId}`);
     navigate(`/quote/${orderId}`);
-
-    // You can open a modal or navigate to another page with the orderId here.
   };
-  const orders = JSON.parse(localStorage.getItem("orders")) || [];
 
+
+
+  useEffect(() => {
+    getAllOrders()
+  }, [])
   return (
     <>
       <h2 className="text-2xl font-bold mt-10 mb-4">Danh Sách Đơn Hàng</h2>

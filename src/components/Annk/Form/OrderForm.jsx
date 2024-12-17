@@ -1,6 +1,7 @@
 import { Button, DatePicker, Form, Input, message, Radio, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import { provincesService } from "../../../services/provincesService";
+import { orderService } from "../../../services/orderService";
 import { vehicleTypeService } from "../../../services/vehicleTypeService";
 import { generateTourId } from "../../../utils/generateTourId";
 import VehicleOption from "../../vehicleOption";
@@ -54,7 +55,7 @@ const OrderForm = ({ info }) => {
     const generatedId = await generateTourId(
       values.departing,
       values.arriving,
-      selectedVehicle,
+      selectedVehicle.code,
       getProvinceCode,
     );
     const newOrder = {
@@ -67,18 +68,16 @@ const OrderForm = ({ info }) => {
       },
       departing: values.departing,
       arriving: values.arriving,
-      specialRequirements: values.specialRequirements,
+      description: values.description,
+      vehicleId: selectedVehicle._id
     };
-    const updatedOrders = [...orders, newOrder];
-    setOrders(updatedOrders);
-    localStorage.setItem("orders", JSON.stringify(updatedOrders));
-
+    await orderService.create(newOrder);
     message.success("Đơn hàng đã được thêm!");
     form.resetFields();
   };
 
   return (
-    <div className="max-w-full mx-auto p-5 bg-white shadow-md rounded-lg">
+    <div className="max-w-full mx-auto p-5 pb-1 bg-white shadow-md rounded-lg">
       <h2 className="text-2xl font-bold mb-6">
         <span>Thông Tin Đơn Hàng</span>
       </h2>
@@ -87,15 +86,7 @@ const OrderForm = ({ info }) => {
           vehicleType.map((item) => (
             <div key={item._id}
               onClick={() => {
-                localStorage.setItem(
-                  "selectedOption",
-                  JSON.stringify({
-                    code: item.code ? item.code : null,
-                    id: item._id ? item._id : null,
-                  })
-                );
-
-                setSelectedVehicle(item.code)
+                setSelectedVehicle(item)
               }}
               className={`${selectedVehicle === item.code ? 'bg-slate-800 border border-black' : 'bg-slate-100'} rounded-2xl`}
             >
@@ -109,15 +100,6 @@ const OrderForm = ({ info }) => {
         layout="vertical"
         onFinish={handleAddOrder}
         autoComplete="off"
-        initialValues={{
-          customerName: info?.customer.name,
-          email: info?.customer.email,
-          phone: info?.customer.phone,
-          zalo: info?.customer.zalo,
-          departing: info?.departing,
-          arriving: info?.arriving,
-          specialRequirements: info?.specialRequirements,
-        }}
       >
         <div className="grid grid-cols-2 gap-5">
           <Form.Item
@@ -194,7 +176,7 @@ const OrderForm = ({ info }) => {
 
         <Form.Item
           label="Lưu ý"
-          name="specialRequirements"
+          name="description"
         >
           <Input.TextArea />
         </Form.Item>
