@@ -33,20 +33,20 @@ const ListMeal = [
 ]
 
 const MealManagement = () => {
-  const infoTraveler = JSON.parse(localStorage.getItem("order"));
+  const infoTraveler = JSON.parse(localStorage.getItem("tourInfo"));
   console.log("🚀 ~ MealManagement ~ infoTraveler:", infoTraveler.passengers)
   const [data, setData] = useState([]);
   console.log("🚀 ~ MealManagement ~ data:", data)
 
   useEffect(() => {
-    const dateList = getDatesInRange(infoTraveler.customer.departureDate, infoTraveler.customer.returnDate);
+    const dateList = getDatesInRange(infoTraveler.date[0], infoTraveler.date[1]);
     const initialData = dateList.map((date, index) => ({
       key: index,
       date: date,
       sessions: []
     }));
     setData(initialData);
-  }, [infoTraveler.customer.departureDate, infoTraveler.customer.returnDate]);
+  }, [infoTraveler.date[0], infoTraveler.date[1]]);
 
   const handleFieldChange = (dayIndex, sessionIndex, field, value) => {
     const newData = [...data];

@@ -16,7 +16,7 @@ import FormCustom from "./formCustom";
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 export default function HotelInfo() {
-  const infoTraveler = JSON.parse(localStorage.getItem("order"));
+  const infoTraveler = JSON.parse(localStorage.getItem("tourInfo"));
 
   const [nights, setNights] = useState(0);
   const [days, setDays] = useState("");
@@ -26,13 +26,12 @@ export default function HotelInfo() {
   );
 
   const [roomType, setRoomType] = useState("2 people/room"); // Default to 2 people/room
-  const [roomCount, setRoomCount] = useState(0);
 
   console.log("This is food info:", infoTraveler);
 
   const calculateNights = () => {
-    const departureDate = new Date(infoTraveler.departureDate);
-    const returnDate = new Date(infoTraveler.returnDate);
+    const departureDate = new Date(infoTraveler.date[0]);
+    const returnDate = new Date(infoTraveler.date[1]);
 
     // Check for valid dates and correct order
     if (isNaN(departureDate) || isNaN(returnDate)) {
@@ -52,8 +51,8 @@ export default function HotelInfo() {
   };
 
   const calculateNightsAndDays = () => {
-    const departureDate = infoTraveler.departureDate;
-    const returnDate = infoTraveler.returnDate;
+    const departureDate = infoTraveler.date[0];
+    const returnDate = infoTraveler.date[1];
 
     const msInADay = 24 * 60 * 60 * 1000; // milliseconds in a day
     const departure = new Date(departureDate);
@@ -103,8 +102,8 @@ export default function HotelInfo() {
             <FormStandar
               nights={nights}
               totalPassengers={totalPassengers}
-              departureDate={infoTraveler.departureDate}
-              returnDate={infoTraveler.returnDate}
+              departureDate={infoTraveler.date[0]}
+              returnDate={infoTraveler.date[1]}
               infoTraveler={infoTraveler}
             />
           </TabPane>
@@ -113,8 +112,8 @@ export default function HotelInfo() {
             <FormCustom
               nights={nights}
               totalPassengers={totalPassengers}
-              departureDate={infoTraveler.departureDate}
-              returnDate={infoTraveler.returnDate}
+              departureDate={infoTraveler.date[0]}
+              returnDate={infoTraveler.date[1]}
               infoTraveler={infoTraveler}
             />
           </TabPane>

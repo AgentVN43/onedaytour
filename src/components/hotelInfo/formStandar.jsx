@@ -1,4 +1,5 @@
 import { Button, Table, Typography } from "antd";
+import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 
 export default function FormStandar({
@@ -24,13 +25,13 @@ export default function FormStandar({
       title: "Check-in Date",
       dataIndex: "checkin",
       key: "checkin",
-      render: (text) => <Typography.Text>{departureDate}</Typography.Text>,
+      render: (text) => <Typography.Text>{dayjs(departureDate).format('YYYY-MM-DD')}</Typography.Text>,
     },
     {
       title: "Check-out Date",
       dataIndex: "checkout",
       key: "checkout",
-      render: (text) => <Typography.Text>{returnDate}</Typography.Text>,
+      render: (text) => <Typography.Text>{dayjs(returnDate).format('YYYY-MM-DD')}</Typography.Text>,
     },
     {
       title: "Nights",

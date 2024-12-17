@@ -17,109 +17,11 @@ const FormCustom = ({ infoTraveler, setInfoTraveler }) => {
   const [result, setResult] = useState(null);
 
   const ROOM_TYPES = [
-    { id: 1, name: "Single Room", capacity: 1 },
-    { id: 2, name: "Double Room", capacity: 2 },
-    { id: 3, name: "Triple Room", capacity: 3 },
+    { id: 1, name: "Phòng đơn", capacity: 1 },
+    
+    { id: 2, name: "Phòng hai", capacity: 2 },
+    { id: 3, name: "Phòng ba", capacity: 3 },
   ];
-
-  // const findOptimalRooms = (values) => {
-  //   const { totalGuests, selectedRoomType, selectedRoomCount } = values;
-
-  //   if (!totalGuests || !selectedRoomType || !selectedRoomCount) {
-  //     return { error: "Please fill in all fields" };
-  //   }
-
-  //   // Find the selected room type
-  //   const primaryRoom = ROOM_TYPES.find((room) => room.id === selectedRoomType);
-
-  //   // Calculate remaining guests after primary room allocation
-  //   const guestsInPrimaryRooms = primaryRoom.capacity * selectedRoomCount;
-
-  //   if (guestsInPrimaryRooms > totalGuests) {
-  //     return { error: "Selected rooms exceed total guests" };
-  //   }
-
-  //   const remainingGuests = totalGuests - guestsInPrimaryRooms;
-
-  //   // If no remaining guests, return only primary room allocation
-  //   if (remainingGuests === 0) {
-  //     return {
-  //       totalGuests,
-  //       distribution: [
-  //         {
-  //           ...primaryRoom,
-  //           count: selectedRoomCount,
-  //           totalCapacity: guestsInPrimaryRooms,
-  //         },
-  //       ],
-  //       totalRooms: selectedRoomCount,
-  //       totalCapacity: guestsInPrimaryRooms,
-  //     };
-  //   }
-
-  //   // Get remaining room types for optimization
-  //   const remainingRoomTypes = ROOM_TYPES.filter(
-  //     (room) => room.id !== selectedRoomType
-  //   ).sort((a, b) => b.capacity - a.capacity); // Sort by capacity descending
-
-  //   let distribution = [
-  //     {
-  //       ...primaryRoom,
-  //       count: selectedRoomCount,
-  //       totalCapacity: guestsInPrimaryRooms,
-  //     },
-  //   ];
-
-  //   let guests = remainingGuests;
-
-  //   // Optimize remaining guests allocation
-  //   for (const roomType of remainingRoomTypes) {
-  //     const roomCount = Math.floor(guests / roomType.capacity);
-  //     if (roomCount > 0) {
-  //       const allocatedGuests = roomCount * roomType.capacity;
-  //       distribution.push({
-  //         ...roomType,
-  //         count: roomCount,
-  //         totalCapacity: allocatedGuests,
-  //       });
-  //       guests -= allocatedGuests;
-  //     }
-  //   }
-
-  //   // Handle any remaining guests with smallest room type
-  //   if (guests > 0) {
-  //     const smallestRoom = remainingRoomTypes[remainingRoomTypes.length - 1];
-  //     const extraRooms = Math.ceil(guests / smallestRoom.capacity);
-  //     const existingRoom = distribution.find(
-  //       (room) => room.id === smallestRoom.id
-  //     );
-
-  //     if (existingRoom) {
-  //       existingRoom.count += extraRooms;
-  //       existingRoom.totalCapacity += guests;
-  //     } else {
-  //       distribution.push({
-  //         ...smallestRoom,
-  //         count: extraRooms,
-  //         totalCapacity: guests,
-  //       });
-  //     }
-  //   }
-
-  //   // Calculate totals
-  //   const totalRooms = distribution.reduce((sum, room) => sum + room.count, 0);
-  //   const totalCapacity = distribution.reduce(
-  //     (sum, room) => sum + room.totalCapacity,
-  //     0
-  //   );
-
-  //   return {
-  //     totalGuests,
-  //     distribution,
-  //     totalRooms,
-  //     totalCapacity,
-  //   };
-  // };
 
   const findOptimalRooms = (values) => {
     const { totalGuests, rooms } = values;
@@ -221,19 +123,6 @@ const FormCustom = ({ infoTraveler, setInfoTraveler }) => {
     setResult(result);
   };
 
-  // const handleConfirm = () => {
-  //   if (result && !result.error) {
-  //     console.log("Hotel Room Distribution:", {
-  //       totalGuests: result.totalGuests,
-  //       totalRooms: result.totalRooms,
-  //       totalCapacity: result.totalCapacity,
-  //       utilization:
-  //         ((result.totalGuests / result.totalCapacity) * 100).toFixed(1) + "%",
-  //       distribution: result.distribution,
-  //     });
-  //   }
-  // };
-
   const handleConfirm = () => {
     const hotelData = {
       totalGuests: result.totalGuests,
@@ -252,23 +141,23 @@ const FormCustom = ({ infoTraveler, setInfoTraveler }) => {
 
   const columns = [
     {
-      title: "Room Type",
+      title: "Loại phòng",
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Capacity",
+      title: "Số người/ Phòng",
       dataIndex: "capacity",
       key: "capacity",
       render: (value) => `${value} person${value > 1 ? "s" : ""}/room`,
     },
     {
-      title: "Number of Rooms",
+      title: "Số lượng phòng",
       dataIndex: "count",
       key: "count",
     },
     {
-      title: "Total Capacity",
+      title: "Số lượng người",
       dataIndex: "totalCapacity",
       key: "totalCapacity",
       render: (value) => `${value} guests`,
@@ -276,112 +165,6 @@ const FormCustom = ({ infoTraveler, setInfoTraveler }) => {
   ];
 
   return (
-    // <Card style={{ width: "100%", maxWidth: 800, margin: "0 auto" }}>
-    //   <Title level={3} style={{ marginBottom: 24 }}>
-    //     Hotel Room Optimizer
-    //   </Title>
-
-    //   <Form form={form} onFinish={handleCalculate} layout="vertical">
-    //     <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
-    //       <Form.Item
-    //         name="totalGuests"
-    //         label="Total Guests"
-    //         style={{ flex: 1 }}
-    //         rules={[{ required: true, message: "Please enter total guests" }]}
-    //       >
-    //         <InputNumber
-    //           style={{ width: "100%" }}
-    //           min={1}
-    //           placeholder="Enter total guests"
-    //         />
-    //       </Form.Item>
-
-    //       <Form.Item
-    //         name="selectedRoomType"
-    //         label="Primary Room Type"
-    //         style={{ flex: 1 }}
-    //         rules={[{ required: true, message: "Please select room type" }]}
-    //       >
-    //         <Select placeholder="Select room type">
-    //           {ROOM_TYPES.map((room) => (
-    //             <Option key={room.id} value={room.id}>
-    //               {room.name} ({room.capacity} person
-    //               {room.capacity > 1 ? "s" : ""})
-    //             </Option>
-    //           ))}
-    //         </Select>
-    //       </Form.Item>
-
-    //       <Form.Item
-    //         name="selectedRoomCount"
-    //         label="Number of Rooms"
-    //         style={{ flex: 1 }}
-    //         rules={[
-    //           { required: true, message: "Please enter number of rooms" },
-    //         ]}
-    //       >
-    //         <InputNumber
-    //           style={{ width: "100%" }}
-    //           min={1}
-    //           placeholder="Enter number of rooms"
-    //         />
-    //       </Form.Item>
-    //     </div>
-
-    //     <Form.Item>
-    //       <div style={{ display: "flex", gap: 16 }}>
-    //         <Button type="primary" htmlType="submit" size="large">
-    //           Calculate
-    //         </Button>
-    //         {result && !result.error && (
-    //           <Button type="default" size="large" onClick={handleConfirm}>
-    //             Confirm
-    //           </Button>
-    //         )}
-    //       </div>
-    //     </Form.Item>
-    //   </Form>
-
-    //   {result && !result.error && (
-    //     <div style={{ marginTop: 24 }}>
-    //       <Card size="small" style={{ marginBottom: 24 }}>
-    //         <div
-    //           style={{
-    //             display: "flex",
-    //             justifyContent: "space-between",
-    //             flexWrap: "wrap",
-    //             gap: 16,
-    //           }}
-    //         >
-    //           <Text strong>Total Guests: {result.totalGuests}</Text>
-    //           <Text strong>Total Rooms: {result.totalRooms}</Text>
-    //           <Text strong>Total Capacity: {result.totalCapacity}</Text>
-    //           <Text strong>
-    //             Utilization:{" "}
-    //             {((result.totalGuests / result.totalCapacity) * 100).toFixed(1)}
-    //             %
-    //           </Text>
-    //         </div>
-    //       </Card>
-
-    //       <Table
-    //         dataSource={result.distribution}
-    //         columns={columns}
-    //         pagination={false}
-    //         rowKey="id"
-    //       />
-    //     </div>
-    //   )}
-
-    //   {result?.error && (
-    //     <Alert
-    //       message="Error"
-    //       description={result.error}
-    //       type="error"
-    //       showIcon
-    //     />
-    //   )}
-    // </Card>
     <Card style={{ width: "100%", maxWidth: 800, margin: "0 auto" }}>
       <Title level={3} style={{ marginBottom: 24 }}>
         Hotel Room Optimizer
