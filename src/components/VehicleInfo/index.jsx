@@ -41,36 +41,101 @@ export default function VehicleInfo() {
 
   const sortedVehicles = [...vehicle].sort((a, b) => b.seat - a.seat);
 
+  // const findOptimalCombination = (totalPassengers) => {
+  //   const passengerCount = parseInt(totalPassengers);
+  //   if (isNaN(passengerCount) || passengerCount <= 0) {
+  //     return { error: "Please enter a valid number of passengers" };
+  //   }
+
+  //   let remainingPassengers = passengerCount;
+  //   const vehicleDistribution = sortedVehicles.map((vehicle) => ({
+  //     ...vehicle,
+  //     count: 0,
+  //     totalSeats: 0,
+  //   }));
+
+  //   // First pass: Use larger vehicles first
+  //   for (
+  //     let i = 0;
+  //     i < vehicleDistribution.length && remainingPassengers > 0;
+  //     i++
+  //   ) {
+  //     const vehicle = vehicleDistribution[i];
+  //     const neededVehicles = Math.floor(remainingPassengers / vehicle.seat);
+  //     vehicle.count = neededVehicles;
+  //     vehicle.totalSeats = neededVehicles * vehicle.seat;
+  //     remainingPassengers -= vehicle.totalSeats;
+  //   }
+
+  //   // Second pass: Handle remaining passengers with smallest suitable vehicle
+  //   if (remainingPassengers > 0) {
+  //     for (let i = vehicleDistribution.length - 1; i >= 0; i--) {
+  //       const vehicle = vehicleDistribution[i];
+  //       if (vehicle.seat >= remainingPassengers) {
+  //         vehicle.count += 1;
+  //         vehicle.totalSeats += vehicle.seat;
+  //         remainingPassengers = 0;
+  //         break;
+  //       }
+  //     }
+  //   }
+
+  //   // Calculate totals
+  //   const totalVehicles = vehicleDistribution.reduce(
+  //     (sum, v) => sum + v.count,
+  //     0
+  //   );
+  //   const totalCapacity = vehicleDistribution.reduce(
+  //     (sum, v) => sum + v.totalSeats,
+  //     0
+  //   );
+  //   const utilizationRate = ((passengerCount / totalCapacity) * 100).toFixed(1);
+
+  //   // If we still have remaining passengers, it means we can't accommodate everyone
+  //   if (remainingPassengers > 0) {
+  //     return {
+  //       error:
+  //         "Cannot accommodate this many passengers with available vehicles",
+  //     };
+  //   }
+
+  //   return {
+  //     distribution: vehicleDistribution,
+  //     totalVehicles,
+  //     totalCapacity,
+  //     passengers: passengerCount,
+  //     utilizationRate,
+  //   };
+  // };
+
   const findOptimalCombination = (totalPassengers) => {
     const passengerCount = parseInt(totalPassengers);
     if (isNaN(passengerCount) || passengerCount <= 0) {
       return { error: "Please enter a valid number of passengers" };
     }
-
+  
     let remainingPassengers = passengerCount;
     const vehicleDistribution = sortedVehicles.map((vehicle) => ({
       ...vehicle,
       count: 0,
       totalSeats: 0,
     }));
-
-    // First pass: Use larger vehicles first
-    for (
-      let i = 0;
-      i < vehicleDistribution.length && remainingPassengers > 0;
-      i++
-    ) {
-      const vehicle = vehicleDistribution[i];
+  
+    // First pass: Use smaller vehicles first (sort by seat count)
+    const sortedBySeatsAsc = [...vehicleDistribution].sort((a, b) => a.seat - b.seat); // Sort vehicles by seat count in ascending order
+  
+    for (let i = 0; i < sortedBySeatsAsc.length && remainingPassengers > 0; i++) {
+      const vehicle = sortedBySeatsAsc[i];
       const neededVehicles = Math.floor(remainingPassengers / vehicle.seat);
       vehicle.count = neededVehicles;
       vehicle.totalSeats = neededVehicles * vehicle.seat;
       remainingPassengers -= vehicle.totalSeats;
     }
-
-    // Second pass: Handle remaining passengers with smallest suitable vehicle
+  
+    // Second pass: Handle remaining passengers with the smallest suitable vehicle
     if (remainingPassengers > 0) {
-      for (let i = vehicleDistribution.length - 1; i >= 0; i--) {
-        const vehicle = vehicleDistribution[i];
+      for (let i = sortedBySeatsAsc.length - 1; i >= 0; i--) {
+        const vehicle = sortedBySeatsAsc[i];
         if (vehicle.seat >= remainingPassengers) {
           vehicle.count += 1;
           vehicle.totalSeats += vehicle.seat;
@@ -79,18 +144,18 @@ export default function VehicleInfo() {
         }
       }
     }
-
+  
     // Calculate totals
-    const totalVehicles = vehicleDistribution.reduce(
+    const totalVehicles = sortedBySeatsAsc.reduce(
       (sum, v) => sum + v.count,
       0
     );
-    const totalCapacity = vehicleDistribution.reduce(
+    const totalCapacity = sortedBySeatsAsc.reduce(
       (sum, v) => sum + v.totalSeats,
       0
     );
     const utilizationRate = ((passengerCount / totalCapacity) * 100).toFixed(1);
-
+  
     // If we still have remaining passengers, it means we can't accommodate everyone
     if (remainingPassengers > 0) {
       return {
@@ -98,9 +163,9 @@ export default function VehicleInfo() {
           "Cannot accommodate this many passengers with available vehicles",
       };
     }
-
+  
     return {
-      distribution: vehicleDistribution,
+      distribution: sortedBySeatsAsc,
       totalVehicles,
       totalCapacity,
       passengers: passengerCount,
@@ -108,6 +173,7 @@ export default function VehicleInfo() {
     };
   };
 
+  
   const handleCalculate = () => {
     const result = findOptimalCombination(passengers);
     setResult(result);
