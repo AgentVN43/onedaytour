@@ -6,4 +6,5 @@ export const service = {
   createService: (data) => api.post("/services", data),
   updateService: (id, data) => api.put(`/services/${id}`, data),
   deleteService: (id) => api.delete(`/services/${id}`),
+  getServiceCategoryById: (id) => api.get(`/services/category/${id}`),
 };
