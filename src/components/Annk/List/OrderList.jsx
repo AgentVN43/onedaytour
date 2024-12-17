@@ -32,12 +32,12 @@ export default function OrderList() {
     },
     {
       title: "Khởi hành",
-      dataIndex: ["customer", "departing"],
+      dataIndex: ["departing"],
       key: "departing",
     },
     {
       title: "Điểm đến",
-      dataIndex: ["customer", "arriving"],
+      dataIndex: ["arriving"],
       key: "arriving",
     },
     {
