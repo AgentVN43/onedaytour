@@ -88,7 +88,7 @@ const OrderForm = ({ info }) => {
               onClick={() => {
                 setSelectedVehicle(item)
               }}
-              className={`${selectedVehicle === item.code ? 'bg-slate-800 border border-black' : 'bg-slate-100'} rounded-2xl`}
+              className={`${selectedVehicle?.code === item.code ? 'bg-slate-800 border border-black' : 'bg-slate-100'} rounded-2xl`}
             >
               <VehicleOption item={item} />
             </div>

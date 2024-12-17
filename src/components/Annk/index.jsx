@@ -10,30 +10,31 @@ const { Content } = Layout;
 const AnnkTest = () => {
   const [activeKey, setActiveKey] = useState("1");
 
-  const tabItems = [
-    {
-      label: " Tạo đơn hàng",
-      key: "1",
-      icon: <CarOutlined />,
-      children: <OrderForm />,
-    },
-    {
-      label: "Danh sách đơn hàng",
-      key: "2",
-      icon: <HomeOutlined />,
-      children: <OrderList />,
-    },
-  ];
+  // const tabItems = [
+  //   {
+  //     label: " Tạo đơn hàng",
+  //     key: "1",
+  //     icon: <CarOutlined />,
+  //     children: <OrderForm />,
+  //   },
+  //   {
+  //     label: "Danh sách đơn hàng",
+  //     key: "2",
+  //     icon: <HomeOutlined />,
+  //     children: <OrderList />,
+  //   },
+  // ];
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Content style={{ padding: "24px" }}>
-        <Tabs
+        {/* <Tabs
           type="card"
           items={tabItems}
           activeKey={activeKey}
           onChange={setActiveKey}
-        />
+        /> */}
+        <OrderList />
       </Content>
     </Layout>
   );

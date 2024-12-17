@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { orderService } from "../../../services/orderService";
 import { useEffect, useState } from "react";
 import InfoTour from "../Form/InfoTour";
+import { CarOutlined } from "@ant-design/icons";
 
 export default function OrderList() {
   const [orders, setOrders] = useState([])
@@ -13,7 +14,7 @@ export default function OrderList() {
   const [form] = Form.useForm(); // Form instance
   const [selectedOrderId, setSelectedOrderId] = useState(null);
 
-  
+
   const getOneOrder = async (orderId) => {
     const res = await orderService.getById(orderId)
     if (res && res.data) {
@@ -130,14 +131,18 @@ export default function OrderList() {
     navigate(`/quote/${orderId}`);
   };
 
-
-
   useEffect(() => {
     getAllOrders()
   }, [])
+
   return (
     <>
-      <h2 className="text-2xl font-bold mt-10 mb-4">Danh Sách Đơn Hàng</h2>
+      <div className="flex justify-between">
+        <h2 className="text-2xl font-bold mb-4">Danh Sách Đơn Hàng</h2>
+        <Button onClick={() => navigate('/add-order')}>
+          <CarOutlined /> Tạo đơn hàng
+        </Button>
+      </div>
       <Table
         dataSource={orders}
         columns={columns}

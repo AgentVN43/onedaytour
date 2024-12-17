@@ -7,6 +7,7 @@ import MealManagement from "../components/Meal";
 import GuideServiceManagement from "../components/GuideService";
 import Province from "../components/Province";
 import AnnkTest from "../components/Annk";
+import OrderForm from "../components/Annk/Form/OrderForm";
 
 export default function MainRoute() {
   return (
@@ -20,6 +21,7 @@ export default function MainRoute() {
         <Route path="/locations" element={<Province />} />
         <Route path="/quotes" element={<AnnkTest />} />
         <Route path="/quote/:orderId" element={<QuotationForm />} />
+        <Route path="/add-order/" element={<OrderForm />} />
       </Routes>
     </>
   );
