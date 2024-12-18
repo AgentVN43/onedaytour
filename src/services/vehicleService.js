@@ -7,4 +7,6 @@ export const vehicleService = {
   create: (data) => api.post('/vehicle', data),
   update: (id, data) => api.put(`/vehicle/${id}`, data),
   delete: (id) => api.delete(`/vehicle/${id}`),
+
+  
 };
