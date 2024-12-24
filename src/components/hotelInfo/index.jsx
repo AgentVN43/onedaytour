@@ -1,18 +1,12 @@
 
 import {
-  Button,
   Card,
-  Input,
-  InputNumber,
-  Select,
-  Space,
-  Table,
-  Typography,
   Tabs,
+  Typography
 } from "antd";
 import React, { useEffect, useState } from "react";
-import FormStandar from "./formStandar";
 import FormCustom from "./formCustom";
+import FormStandar from "./formStandar";
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
 export default function HotelInfo() {
@@ -87,7 +81,6 @@ export default function HotelInfo() {
     calculateNightsAndDays();
     calculateRoomCount(roomType);
   }, [infoTraveler, roomType]);
-
   return (
     <>
 
@@ -111,7 +104,7 @@ export default function HotelInfo() {
           <TabPane tab="Custom" key="2">
             <FormCustom
               nights={nights}
-              totalPassengers={totalPassengers}
+              totalGuests={totalPassengers}
               departureDate={infoTraveler.date[0]}
               returnDate={infoTraveler.date[1]}
               infoTraveler={infoTraveler}

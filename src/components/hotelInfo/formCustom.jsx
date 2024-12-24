@@ -8,35 +8,260 @@ import {
   Table,
   Typography,
 } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-const FormCustom = ({ infoTraveler, setInfoTraveler }) => {
+const FormCustom = ({ totalGuests, setInfoTraveler }) => {
   const [form] = Form.useForm();
   const [result, setResult] = useState(null);
 
+
+
+  // const ROOM_TYPES = [
+  //   { id: 1, name: "Phòng đơn", capacity: 1 },
+  //   { id: 2, name: "Phòng hai", capacity: 2 },
+  //   { id: 3, name: "Phòng ba", capacity: 3 },
+  // ];
+
+  // const findOptimalRooms = (values) => {
+  //   const { totalGuests, rooms } = values;
+
+  //   if (!totalGuests) {
+  //     return { error: "Please enter total guests" };
+  //   }
+
+  //   // Calculate total allocated guests from selected rooms
+  //   let allocatedGuests = 0;
+  //   let distribution = [];
+
+  //   // Process selected rooms
+  //   for (const roomType of ROOM_TYPES) {
+  //     const roomCount = rooms[`type${roomType.id}`] || 0;
+  //     if (roomCount > 0) {
+  //       const guestsInRooms = roomType.capacity * roomCount;
+  //       allocatedGuests += guestsInRooms;
+  //       distribution.push({
+  //         ...roomType,
+  //         count: roomCount,
+  //         totalCapacity: guestsInRooms,
+  //       });
+  //     }
+  //   }
+
+  //   let remainingGuests = totalGuests - allocatedGuests;
+
+  //   // Validate if selected rooms don't exceed total guests
+  //   if (allocatedGuests > totalGuests) {
+  //     return { error: "Selected rooms exceed total guests capacity" };
+  //   }
+
+  //   // If there are remaining guests, allocate them optimally
+  //   if (remainingGuests > 0) {
+  //     // Get room types that weren't fully allocated
+  //     const selectedRoomIds = distribution.map((room) => room.id);
+  //     const availableRoomTypes = ROOM_TYPES.filter(
+  //       (room) => !selectedRoomIds.includes(room.id)
+  //     ).sort((a, b) => b.capacity - a.capacity);
+
+  //     // First try to fill with largest available room type
+  //     for (const roomType of availableRoomTypes) {
+  //       const roomCount = Math.floor(remainingGuests / roomType.capacity);
+  //       if (roomCount > 0) {
+  //         const allocatedGuests = roomCount * roomType.capacity;
+  //         distribution.push({
+  //           ...roomType,
+  //           count: roomCount,
+  //           totalCapacity: allocatedGuests,
+  //         });
+  //         remainingGuests -= allocatedGuests;
+  //       }
+  //     }
+
+  //     // If there are still remaining guests, use the smallest available room
+  //     if (remainingGuests > 0) {
+  //       const smallestRoom = availableRoomTypes[availableRoomTypes.length - 1];
+  //       if (smallestRoom) {
+  //         const extraRooms = Math.ceil(remainingGuests / smallestRoom.capacity);
+  //         const existingRoom = distribution.find(
+  //           (room) => room.id === smallestRoom.id
+  //         );
+
+  //         if (existingRoom) {
+  //           existingRoom.count += extraRooms;
+  //           existingRoom.totalCapacity += remainingGuests;
+  //         } else {
+  //           distribution.push({
+  //             ...smallestRoom,
+  //             count: extraRooms,
+  //             totalCapacity: remainingGuests,
+  //           });
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   // Sort distribution by room type ID for consistent display
+  //   distribution.sort((a, b) => a.id - b.id);
+
+  //   // Calculate totals
+  //   const totalRooms = distribution.reduce((sum, room) => sum + room.count, 0);
+  //   const totalCapacity = distribution.reduce(
+  //     (sum, room) => sum + room.totalCapacity,
+  //     0
+  //   );
+
+  //   return {
+  //     totalGuests,
+  //     distribution,
+  //     totalRooms,
+  //     totalCapacity,
+  //   };
+  // };
+
   const ROOM_TYPES = [
     { id: 1, name: "Phòng đơn", capacity: 1 },
-    
-    { id: 2, name: "Phòng hai", capacity: 2 },
+    { id: 2, name: "Phòng hai", capacity: 2, hidden: true },
     { id: 3, name: "Phòng ba", capacity: 3 },
   ];
 
-  const findOptimalRooms = (values) => {
-    const { totalGuests, rooms } = values;
+  // const findOptimalRooms = (values) => {
+  //   const { rooms } = values;
 
-    if (!totalGuests) {
-      return { error: "Please enter total guests" };
+  //   if (!totalGuests) {
+  //     return { error: "Please enter total guests" };
+  //   }
+
+  //   let allocatedGuests = 0;
+  //   let distribution = [];
+
+  //   // Determine if type1 and type3 rooms are input
+  //   const hasType1Input = rooms?.type1 > 0;
+  //   const hasType3Input = rooms?.type3 > 0;
+
+  //   // Process already selected rooms
+  //   for (const roomType of ROOM_TYPES) {
+  //     if (roomType.hidden) continue; // Skip hidden room type
+
+  //     const roomCount = rooms?.[`type${roomType.id}`] || 0;
+  //     if (roomCount > 0) {
+  //       const guestsInRooms = roomType.capacity * roomCount;
+  //       allocatedGuests += guestsInRooms;
+  //       distribution.push({
+  //         ...roomType,
+  //         count: roomCount,
+  //         totalCapacity: guestsInRooms,
+  //       });
+  //     }
+  //   }
+
+  //   let remainingGuests = totalGuests - allocatedGuests;
+
+  //   // If no type1 and type3 rooms are input, prioritize type2 rooms
+  //   if (!hasType1Input && !hasType3Input) {
+  //     const type2 = ROOM_TYPES.find((room) => room.id === 2);
+  //     const type2Rooms = Math.floor(remainingGuests / type2.capacity);
+  //     const allocated = type2Rooms * type2.capacity;
+
+  //     if (type2Rooms > 0) {
+  //       distribution.push({
+  //         ...type2,
+  //         count: type2Rooms,
+  //         totalCapacity: allocated,
+  //       });
+
+  //       remainingGuests -= allocated;
+  //     }
+  //   }
+
+  //   // If there are still remaining guests, allocate optimally with other room types
+  //   if (remainingGuests > 0) {
+  //     // Prioritize rooms based on capacity, avoiding type2 if possible
+  //     const availableRoomTypes = ROOM_TYPES.filter(
+  //       (room) => !room.hidden && room.id !== 2
+  //     ).sort((a, b) => b.capacity - a.capacity);
+
+  //     const optimalRoomTypes = [...availableRoomTypes];
+
+  //     // If no type1 or type3 rooms were input, add type2
+  //     if (!hasType1Input && !hasType3Input) {
+  //       const type2 = ROOM_TYPES.find((room) => room.id === 2);
+  //       optimalRoomTypes.push(type2);
+  //     }
+
+  //     for (const roomType of optimalRoomTypes) {
+  //       if (remainingGuests <= 0) break;
+
+  //       const roomCount = Math.floor(remainingGuests / roomType.capacity);
+  //       if (roomCount > 0) {
+  //         const allocated = roomCount * roomType.capacity;
+
+  //         distribution.push({
+  //           ...roomType,
+  //           count: roomCount,
+  //           totalCapacity: allocated,
+  //         });
+
+  //         remainingGuests -= allocated;
+  //       }
+  //     }
+
+  //     // Handle any remaining guests with the smallest room type
+  //     if (remainingGuests > 0) {
+  //       const smallestRoom = ROOM_TYPES.find((room) => room.id === 1);
+  //       distribution.push({
+  //         ...smallestRoom,
+  //         count: 1,
+  //         totalCapacity: remainingGuests,
+  //       });
+  //     }
+  //   }
+
+  //   // Sort distribution by room type ID for consistent display
+  //   distribution.sort((a, b) => a.id - b.id);
+
+  //   // Calculate totals
+  //   const totalRooms = distribution.reduce((sum, room) => sum + room.count, 0);
+  //   const totalCapacity = distribution.reduce(
+  //     (sum, room) => sum + room.totalCapacity,
+  //     0
+  //   );
+
+  //   return {
+  //     totalGuests,
+  //     distribution,
+  //     totalRooms,
+  //     totalCapacity,
+  //   };
+  // };
+
+  const findOptimalRooms = (values) => {
+    
+
+    const { rooms } = values;
+
+    if (totalGuests === 0) {
+      return { error: "No guests found" };
     }
 
-    // Calculate total allocated guests from selected rooms
     let allocatedGuests = 0;
     let distribution = [];
 
-    // Process selected rooms
+    const ROOM_TYPES = [
+      { id: 1, name: "Phòng đơn", capacity: 1 },
+      { id: 2, name: "Phòng hai", capacity: 2, hidden: true },
+      { id: 3, name: "Phòng ba", capacity: 3 },
+    ];
+
+    // Determine if type1 and type3 rooms are input
+    const hasType1Input = rooms?.type1 > 0;
+    const hasType3Input = rooms?.type3 > 0;
+
+    // Process already selected rooms
     for (const roomType of ROOM_TYPES) {
-      const roomCount = rooms[`type${roomType.id}`] || 0;
+      if (roomType.hidden) continue; // Skip hidden room type
+
+      const roomCount = rooms?.[`type${roomType.id}`] || 0;
       if (roomCount > 0) {
         const guestsInRooms = roomType.capacity * roomCount;
         allocatedGuests += guestsInRooms;
@@ -50,53 +275,63 @@ const FormCustom = ({ infoTraveler, setInfoTraveler }) => {
 
     let remainingGuests = totalGuests - allocatedGuests;
 
-    // Validate if selected rooms don't exceed total guests
-    if (allocatedGuests > totalGuests) {
-      return { error: "Selected rooms exceed total guests capacity" };
+    // If no type1 and type3 rooms are input, prioritize type2 rooms
+    if (!hasType1Input && !hasType3Input) {
+      const type2 = ROOM_TYPES.find((room) => room.id === 2);
+      const type2Rooms = Math.floor(remainingGuests / type2.capacity);
+      const allocated = type2Rooms * type2.capacity;
+
+      if (type2Rooms > 0) {
+        distribution.push({
+          ...type2,
+          count: type2Rooms,
+          totalCapacity: allocated,
+        });
+
+        remainingGuests -= allocated;
+      }
     }
 
-    // If there are remaining guests, allocate them optimally
+    // If there are still remaining guests, allocate optimally with other room types
     if (remainingGuests > 0) {
-      // Get room types that weren't fully allocated
-      const selectedRoomIds = distribution.map((room) => room.id);
+      // Prioritize rooms based on capacity, avoiding type2 if possible
       const availableRoomTypes = ROOM_TYPES.filter(
-        (room) => !selectedRoomIds.includes(room.id)
+        (room) => !room.hidden && room.id !== 2
       ).sort((a, b) => b.capacity - a.capacity);
 
-      // First try to fill with largest available room type
-      for (const roomType of availableRoomTypes) {
+      const optimalRoomTypes = [...availableRoomTypes];
+
+      // If no type1 or type3 rooms were input, add type2
+      if (!hasType1Input && !hasType3Input) {
+        const type2 = ROOM_TYPES.find((room) => room.id === 2);
+        optimalRoomTypes.push(type2);
+      }
+
+      for (const roomType of optimalRoomTypes) {
+        if (remainingGuests <= 0) break;
+
         const roomCount = Math.floor(remainingGuests / roomType.capacity);
         if (roomCount > 0) {
-          const allocatedGuests = roomCount * roomType.capacity;
+          const allocated = roomCount * roomType.capacity;
+
           distribution.push({
             ...roomType,
             count: roomCount,
-            totalCapacity: allocatedGuests,
+            totalCapacity: allocated,
           });
-          remainingGuests -= allocatedGuests;
+
+          remainingGuests -= allocated;
         }
       }
 
-      // If there are still remaining guests, use the smallest available room
+      // Handle any remaining guests with the smallest room type
       if (remainingGuests > 0) {
-        const smallestRoom = availableRoomTypes[availableRoomTypes.length - 1];
-        if (smallestRoom) {
-          const extraRooms = Math.ceil(remainingGuests / smallestRoom.capacity);
-          const existingRoom = distribution.find(
-            (room) => room.id === smallestRoom.id
-          );
-
-          if (existingRoom) {
-            existingRoom.count += extraRooms;
-            existingRoom.totalCapacity += remainingGuests;
-          } else {
-            distribution.push({
-              ...smallestRoom,
-              count: extraRooms,
-              totalCapacity: remainingGuests,
-            });
-          }
-        }
+        const smallestRoom = ROOM_TYPES.find((room) => room.id === 1);
+        distribution.push({
+          ...smallestRoom,
+          count: 1,
+          totalCapacity: remainingGuests,
+        });
       }
     }
 
@@ -180,6 +415,7 @@ const FormCustom = ({ infoTraveler, setInfoTraveler }) => {
             type2: 0,
             type3: 0,
           },
+          totalGuests: totalGuests,
         }}
       >
         <Form.Item
@@ -191,7 +427,7 @@ const FormCustom = ({ infoTraveler, setInfoTraveler }) => {
           <InputNumber
             style={{ width: "100%" }}
             min={1}
-            placeholder="Enter total guests"
+            disabled
           />
         </Form.Item>
 

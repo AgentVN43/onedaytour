@@ -18,6 +18,7 @@ import MealsInfo from "../components/mealsInfo";
 import ServicesInfo from "../components/servicesInfo";
 import TourQuotation from "../components/tourSchedule";
 import { useNavigate } from "react-router-dom";
+import RoomAllocation from "../components/hotelInfo/RoomAllocation";
 
 export default function TourPage() {
   const steps = [
@@ -30,7 +31,7 @@ export default function TourPage() {
     {
       title: "Lưu trú",
       content: (
-        <HotelInfo />
+        <RoomAllocation />
       ),
     },
     {

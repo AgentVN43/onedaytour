@@ -1,11 +1,10 @@
-import { Button, DatePicker, Form, Input, message, Radio, Select } from "antd";
+import { Button, DatePicker, Form, Input, message, Select } from "antd";
 import React, { useEffect, useState } from "react";
-import { provincesService } from "../../../services/provincesService";
 import { orderService } from "../../../services/orderService";
+import { provincesService } from "../../../services/provincesService";
 import { vehicleTypeService } from "../../../services/vehicleTypeService";
 import { generateTourId } from "../../../utils/generateTourId";
 import VehicleOption from "../../vehicleOption";
-import dayjs from "dayjs";
 
 const { Option } = Select;
 
@@ -56,7 +55,7 @@ const OrderForm = ({ info }) => {
       values.departing,
       values.arriving,
       selectedVehicle.code,
-      getProvinceCode,
+      getProvinceCode
     );
     const newOrder = {
       orderId: generatedId,
@@ -69,7 +68,7 @@ const OrderForm = ({ info }) => {
       departing: values.departing,
       arriving: values.arriving,
       description: values.description,
-      vehicleId: selectedVehicle._id
+      vehicleId: selectedVehicle._id,
     };
     await orderService.create(newOrder);
     message.success("Đơn hàng đã được thêm!");
@@ -82,18 +81,21 @@ const OrderForm = ({ info }) => {
         <span>Thông Tin Đơn Hàng</span>
       </h2>
       <div className="flex justify-center my-2 gap-8">
-        {
-          vehicleType.map((item) => (
-            <div key={item._id}
-              onClick={() => {
-                setSelectedVehicle(item)
-              }}
-              className={`${selectedVehicle?.code === item.code ? 'bg-slate-800 border border-black' : 'bg-slate-100'} rounded-2xl`}
-            >
-              <VehicleOption item={item} />
-            </div>
-          ))
-        }
+        {vehicleType.map((item) => (
+          <div
+            key={item._id}
+            onClick={() => {
+              setSelectedVehicle(item);
+            }}
+            className={`${
+              selectedVehicle?.code === item.code
+                ? "bg-slate-800 border border-black"
+                : "bg-slate-100"
+            } rounded-2xl`}
+          >
+            <VehicleOption item={item} />
+          </div>
+        ))}
       </div>
       <Form
         form={form}
@@ -174,10 +176,7 @@ const OrderForm = ({ info }) => {
           </Form.Item>
         </div>
 
-        <Form.Item
-          label="Lưu ý"
-          name="description"
-        >
+        <Form.Item label="Lưu ý" name="description">
           <Input.TextArea />
         </Form.Item>
         <Form.Item>
