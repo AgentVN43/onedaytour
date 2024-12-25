@@ -1,0 +1,23 @@
+.detailService.modal-body::-webkit-scrollbar {
+    width: 4px;
+    height: 10px;
+    /* Độ rộng của thanh cuộn */
+}
+
+.detailService.modal-body::-webkit-scrollbar-track {
+    background: #e3e3e3;
+    /* Màu nền của thanh cuộn */
+    border-radius: 10px;
+}
+
+.detailService.modal-body::-webkit-scrollbar-thumb {
+    background: #111111;
+    /* Màu của thanh cuộn */
+    border-radius: 10px;
+    /* Bo tròn cho phần thanh cuộn */
+}
+
+.detailService.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #b37a08;
+    /* Màu của thanh cuộn khi di chuột qua */
+}

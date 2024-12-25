@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Card, InputNumber, Typography, Row, Col, Alert, message, Button } from "antd";
+import RoomTypeSelector from "./roomTypeSelector";
 
 const RoomAllocation = () => {
   const [totalGuests, setTotalGuests] = useState(0);
   const [roomsWithOnePerson, setRoomsWithOnePerson] = useState(0);
   const [roomsWithThreePeople, setRoomsWithThreePeople] = useState(0);
+  const [selectedRoom, setSelectedRoom] = useState(null);
   const [allocation, setAllocation] = useState({
     onePersonRooms: 0,
     twoPersonRooms: 0,
@@ -26,7 +28,6 @@ const RoomAllocation = () => {
         setTotalGuests(passengers);
 
         // Optional: Show a message about loaded data
-        message.info(`Loaded ${passengers} passengers from localStorage`);
       }
     } catch (error) {
       console.error("Error parsing localStorage data:", error);
@@ -90,12 +91,13 @@ const RoomAllocation = () => {
 
     try {
       // Retrieve existing localStorage data
-      const storedData = localStorage.getItem("orderInfo");
+      const storedData = localStorage.getItem("tourInfo");
       if (storedData) {
         const parsedData = JSON.parse(storedData);
 
         // Create accommodation object
         const accommodation = {
+          selectedRoom: selectedRoom,
           onePersonRooms: allocation.onePersonRooms,
           twoPersonRooms: allocation.twoPersonRooms,
           threePersonRooms: allocation.threePersonRooms,
@@ -105,7 +107,7 @@ const RoomAllocation = () => {
         parsedData.accommodation = accommodation;
 
         // Save updated data back to localStorage
-        localStorage.setItem("orderInfo", JSON.stringify(parsedData));
+        localStorage.setItem("tourInfo", JSON.stringify(parsedData));
 
         message.success("Accommodation allocation confirmed and saved");
       } else {
@@ -119,8 +121,13 @@ const RoomAllocation = () => {
 
   return (
     <Card
-      title="Guest Room Allocation"
-      style={{ maxWidth: 600, margin: "0 auto" }}
+      title={
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>Phân bổ phòng khách</span>
+          <RoomTypeSelector selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom} />
+        </div>
+      }
+      style={{ margin: "0 auto" }}
     >
       <Row gutter={16} style={{ marginBottom: 16 }}>
         <Col span={8}>
@@ -159,33 +166,33 @@ const RoomAllocation = () => {
         </Col>
       </Row>
 
-      <Typography.Title level={4}>Allocation Result</Typography.Title>
+      <Typography.Title level={4}>Kết quả phân bổ</Typography.Title>
       <Row gutter={16}>
         <Col span={6}>
           <Card>
-            <Typography.Text strong>1-Person Rooms</Typography.Text>
-            <div>{allocation.onePersonRooms} rooms</div>
-            <div>({allocation.onePersonRooms} guests)</div>
+            <Typography.Text strong>Phòng 1 người</Typography.Text>
+            <div>{allocation.onePersonRooms} phòng</div>
+            <div>({allocation.onePersonRooms} khách)</div>
           </Card>
         </Col>
         <Col span={6}>
           <Card>
-            <Typography.Text strong>2-Person Rooms</Typography.Text>
-            <div>{allocation.twoPersonRooms} rooms</div>
-            <div>({allocation.twoPersonRooms * 2} guests)</div>
+            <Typography.Text strong>Phòng 2 người</Typography.Text>
+            <div>{allocation.twoPersonRooms} phòng</div>
+            <div>({allocation.twoPersonRooms * 2} khách)</div>
           </Card>
         </Col>
         <Col span={6}>
           <Card>
-            <Typography.Text strong>3-Person Rooms</Typography.Text>
-            <div>{allocation.threePersonRooms} rooms</div>
-            <div>({allocation.threePersonRooms * 3} guests)</div>
+            <Typography.Text strong>Phòng 3 người</Typography.Text>
+            <div>{allocation.threePersonRooms} phòng</div>
+            <div>({allocation.threePersonRooms * 3} khách)</div>
           </Card>
         </Col>
         <Col span={6}>
           <Card>
-            <Typography.Text strong>Unallocated</Typography.Text>
-            <div>{allocation.unallocatedGuests} guests</div>
+            <Typography.Text strong>Chưa phân bổ</Typography.Text>
+            <div>{allocation.unallocatedGuests} khách</div>
           </Card>
         </Col>
       </Row>
@@ -214,7 +221,7 @@ const RoomAllocation = () => {
           onClick={handleConfirmAccommodation}
           disabled={allocation.unallocatedGuests !== 0}
         >
-          Confirm Accommodation
+          Xác nhận thông tin
         </Button>
       </Row>
     </Card>
