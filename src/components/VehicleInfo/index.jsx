@@ -313,7 +313,7 @@ export default function VehicleInfo() {
     const total =
       parseInt(tourInfo?.passengers?.adults) +
       parseInt(tourInfo?.passengers?.childrenUnder11);
-    setPassengers(total);
+    setPassengers(total || tourInfo?.passengers);
     return total;
   };
 
@@ -335,8 +335,11 @@ export default function VehicleInfo() {
 
   useEffect(() => {
     GetAllVehicle(vehicleID);
-    calculateTotal();
   }, [vehicleID]);
+
+  useEffect(() => {
+    calculateTotal();
+  }, []);
 
   const sortedVehicles = [...vehicle].sort((a, b) => b.seat - a.seat);
 

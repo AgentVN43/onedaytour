@@ -5,7 +5,7 @@ import { provincesService } from "../../services/provincesService";
 import { useEffect, useState } from "react";
 import BreadcrumbC from "../Breadcrumb";
 import TransactionForm from "../Annk/Form/OrderForm";
-import TransportationManagement from "../Transportation";
+import TransportationManagement from "../../pages/Transportation";
 
 export default function Quotation() {
   const [infoTraveler, setInfoTraveler] = useState({

@@ -16,9 +16,10 @@ import HotelInfo from "../components/hotelInfo";
 import VehicleInfo from "../components/vehicleInfo";
 import MealsInfo from "../components/mealsInfo";
 import ServicesInfo from "../components/servicesInfo";
-import TourQuotation from "../components/tourSchedule";
+// import TourQuotation from "../components/tourSchedule";
 import { useNavigate } from "react-router-dom";
 import RoomAllocation from "../components/hotelInfo/RoomAllocation";
+import TourQuotation from "../components/tourSchedule/test";
 
 export default function TourPage() {
   const steps = [

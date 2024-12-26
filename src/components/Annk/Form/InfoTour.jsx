@@ -11,15 +11,7 @@ import { useNavigate } from "react-router-dom";
 const { Option } = Select;
 
 const InfoTour = ({ form }) => {
-    const { RangePicker } = DatePicker;
-
-    const handleAddOrder = async (values) => {
-        const newInfo = {
-            departureDate: values.date ? values.date[0].format("YYYY-MM-DD") : "",
-            returnDate: values.date ? values.date[1].format("YYYY-MM-DD") : "",
-            passengers: values.passengers,
-        };
-    };
+    const { RangePicker } = DatePicker
 
     return (
         <div className="max-w-full mx-auto p-5">
@@ -29,7 +21,6 @@ const InfoTour = ({ form }) => {
             <Form
                 form={form}
                 layout="vertical"
-                onFinish={handleAddOrder}
                 autoComplete="off"
                 initialValues={{
                     passengers: {

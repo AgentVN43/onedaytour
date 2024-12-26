@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Collapse, Table, Input, InputNumber, Button, Select } from 'antd';
+import { Collapse, Table, Input, InputNumber, Button, Select, message } from 'antd';
+import { service } from '../../services/service';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -33,10 +34,16 @@ const ListMeal = [
 ]
 
 const MealManagement = () => {
+  const [services, setService] = useState([])
   const infoTraveler = JSON.parse(localStorage.getItem("tourInfo"));
-  console.log("🚀 ~ MealManagement ~ infoTraveler:", infoTraveler.passengers)
   const [data, setData] = useState([]);
-  console.log("🚀 ~ MealManagement ~ data:", data)
+
+  const getServiceCategoryById = async (categoryId) => {
+    const res = await service.getServiceCategoryById(categoryId)
+    if (res && res.data) {
+      setService(res.data)
+    }
+  }
 
   useEffect(() => {
     const dateList = getDatesInRange(infoTraveler.date[0], infoTraveler.date[1]);
@@ -46,7 +53,8 @@ const MealManagement = () => {
       sessions: []
     }));
     setData(initialData);
-  }, [infoTraveler.date[0], infoTraveler.date[1]]);
+    getServiceCategoryById('6761959fd9fad3b6181add09')
+  }, []);
 
   const handleFieldChange = (dayIndex, sessionIndex, field, value) => {
     const newData = [...data];
@@ -64,8 +72,9 @@ const MealManagement = () => {
         key: `${dayIndex}-${currentSessions}`,
         session: ListMeal[newSessionIndex].name,
         restaurant: '',
-        portionCount: 0,
-        pricePerPortion: 0,
+        portionCount: infoTraveler?.passengers || 0,
+        note: '',
+        // pricePerPortion: '',
       });
       setData(newData);
     } else {
@@ -90,11 +99,6 @@ const MealManagement = () => {
         )
       },
       {
-        title: 'Nhà hàng', dataIndex: 'restaurant', key: 'restaurant', render: (text, _, index) => (
-          <Input value={text} onChange={(e) => handleFieldChange(dayIndex, index, 'restaurant', e.target.value)} />
-        )
-      },
-      {
         title: 'Số phần', dataIndex: 'portionCount', key: 'portionCount', render: (text, _, index) => (
           <InputNumber
             min={0}
@@ -105,16 +109,31 @@ const MealManagement = () => {
       },
       {
         title: 'Giá (VND/phần)', dataIndex: 'pricePerPortion', key: 'pricePerPortion', render: (text, _, index) => (
-          <InputNumber min={0} value={text} onChange={(value) => handleFieldChange(dayIndex, index, 'pricePerPortion', value)} />
+          <Select placeholder='Chọn bữa ăn' value={text} onChange={(value) => handleFieldChange(dayIndex, index, 'pricePerPortion', value)}>
+            {services.map((item, index) => (
+              <Option key={`${item.id} - ${index}`} value={item._id}>{item.services}</Option>
+            ))}
+          </Select>
         )
       },
-      // {
-      //   title: 'Hóa đơn', dataIndex: 'invoice', key: 'invoice', render: (text, _, index) => (
-      //     <Input value={text} onChange={(e) => handleFieldChange(dayIndex, index, 'invoice', e.target.value)} />
-      //   )
-      // },
-      // { title: 'Chưa VAT', dataIndex: 'preVATAmount', key: 'preVATAmount' },
-      // { title: 'VAT', dataIndex: 'VAT', key: 'VAT' },
+      {
+        title: 'Nhà hàng (nếu có)', dataIndex: 'restaurant', key: 'restaurant', render: (text, _, index) => (
+          <Input
+            placeholder="Nhập tên nhà hàng"
+            value={text}
+            onChange={(e) => handleFieldChange(dayIndex, index, 'restaurant', e.target.value)}
+          />
+        )
+      },
+      {
+        title: 'Ghi chú', dataIndex: 'note', key: 'note', render: (text, _, index) => (
+          <Input
+            placeholder="Nhập ghi chú"
+            value={text}
+            onChange={(e) => handleFieldChange(dayIndex, index, 'note', e.target.value)}
+          />
+        )
+      },
       {
         title: 'Thao tác',
         key: 'action',
@@ -130,9 +149,9 @@ const MealManagement = () => {
     const confirmedData = { ...infoTraveler, meals: data }
 
 
-    localStorage.setItem("order", JSON.stringify(confirmedData));
+    localStorage.setItem("tourInfo", JSON.stringify(confirmedData));
 
-    console.log("Meals data saved successfully:", data);
+    message.success("Meals data saved successfully");
   };
   return (
     <div>
@@ -140,20 +159,23 @@ const MealManagement = () => {
         {data.map((day, dayIndex) => (
           <Panel header={`Ngày: ${day.date}`} key={day.key}>
             {renderSessionTable(day.sessions, dayIndex)}
-            <Button
-              onClick={() => addSession(dayIndex)}
-              type="dashed"
-              style={{ marginTop: 16 }}
-            >
-              Thêm buổi ăn
-            </Button>
+            <div className='flex items-center justify-center'>
+              <Button
+                onClick={() => addSession(dayIndex)}
+                type="dashed"
+                style={{ marginTop: 16 }}
+              >
+                Thêm buổi ăn
+              </Button>
+            </div>
           </Panel>
         ))}
       </Collapse>
-
-      <Button type="primary" onClick={handleConfirmMeals} style={{ marginTop: '16px' }}>
-        Xác nhận tạo bữa ăn
-      </Button>
+      <div className='flex items-center justify-center mb-4'>
+        <Button type="primary" onClick={handleConfirmMeals} style={{ marginTop: '16px' }}>
+          Xác nhận tạo bữa ăn
+        </Button>
+      </div>
     </div>
   );
 };
