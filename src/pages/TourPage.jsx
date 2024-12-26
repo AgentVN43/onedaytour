@@ -62,6 +62,11 @@ export default function TourPage() {
   const prev = () => {
     setCurrent(current - 1);
   };
+
+  const handleStepClick = (stepIndex) => {
+    setCurrent(stepIndex);
+  };
+
   const items = steps.map((item) => ({
     key: item.title,
     title: item.title,
@@ -80,7 +85,12 @@ export default function TourPage() {
         <div className="w-full">
           <div className="max-w-7xl mx-auto px-4">
             {/* <div className='flex justify-center mt-20'> */}
-            <Steps current={current} items={items} />
+            <Steps
+              current={current}
+              items={items}
+              onChange={handleStepClick} // Enable step clicking
+              style={{ cursor: "pointer" }}
+            />
             <div style={contentStyle}>{steps[current].content}</div>
             <div className="my-5">
               <div className="my-5">
@@ -111,15 +121,6 @@ export default function TourPage() {
             </div>
           </div>
         </div>
-        {/* <div className="w-2/5">
-          <div className="px-3 py-2 border rounded-xl">
-            <h2 className="font-semibold text-lg">Thông tin đơn hàng</h2>
-            <TourQuotation />
-            <div className="flex justify-center items-center mt-3">
-              <Button onClick={() => navigate('/quotation')}>Create Quotation</Button>
-            </div>
-          </div>
-        </div> */}
       </div>
     </>
   );

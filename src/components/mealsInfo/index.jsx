@@ -72,7 +72,7 @@ const MealManagement = () => {
         key: `${dayIndex}-${currentSessions}`,
         session: ListMeal[newSessionIndex].name,
         restaurant: '',
-        portionCount: infoTraveler?.passengers || 0,
+        portionCount: infoTraveler?.totalpassenger || 0,
         note: '',
         // pricePerPortion: '',
       });

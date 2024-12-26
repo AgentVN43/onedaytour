@@ -1,11 +1,12 @@
 import React from "react";
 import { Card, Table, Typography, Divider, Row, Col } from "antd";
+import dayjs from "dayjs";
 
 const TourQuotation = () => {
 
     const order = JSON.parse(localStorage.getItem("orderInfo"));
     const details = JSON.parse(localStorage.getItem("tourInfo"));
-    const totalServiceCost = details.service.reduce(
+    const totalServiceCost = details.service?.reduce(
         (total, service) => total + service.prices * (service.quantity || 1),
         0
     );
@@ -49,16 +50,16 @@ const TourQuotation = () => {
     ];
 
     const getRowSpanForDate = (value, index, mealData) => {
-        const previousDate = index > 0 ? mealData[index - 1].date : null;
-        if (previousDate === value) return null;
-        return {
-            children: value,
-            props: {
-                rowSpan: mealData.filter(item => item.date === value).length,
-            },
-        };
-    };
+        const previousDate = index > 0 ? mealData[index - 1]?.date : null;
+        const currentDate = mealData[index]?.date;
     
+        if (currentDate === previousDate) {
+            return { props: { rowSpan: 0 } }; // Ẩn các hàng trùng
+        }
+    
+        const rowSpan = mealData.filter((item) => item.date === currentDate).length;
+        return { children: value, props: { rowSpan } }; // Gộp các hàng trùng ngày
+    };
 
     // Table columns for meals
     const mealColumns = [
@@ -66,8 +67,11 @@ const TourQuotation = () => {
             title: "Ngày",
             dataIndex: "date",
             key: "date",
-            render: (value, row, index) => getRowSpanForDate(value, index, mealData),
-        },
+            render: (value, row, index) => {
+                const { children, props } = getRowSpanForDate(value, index, mealData);
+                return <div {...props}>{children}</div>;
+            },
+        },        
         {
             title: "Buổi",
             dataIndex: "session",
@@ -109,14 +113,20 @@ const TourQuotation = () => {
             key: "seats",
         },
         {
+            title: "Đơn giá",
+            dataIndex: "price",
+            key: "price",
+        },
+        {
             title: "Số lượng xe",
             dataIndex: "quantity",
             key: "quantity",
         },
         {
-            title: "Tổng số ghế",
-            dataIndex: "totalSeats",
-            key: "totalSeats",
+            title: "Thành tiền",
+            dataIndex: "total",
+            key: "total",
+            render: (_, record) => `${(record.price * record.quantity).toLocaleString()} VND`,
         },
     ];
 
@@ -135,6 +145,12 @@ const TourQuotation = () => {
             <p><strong>Điểm đi:</strong> {order.departing}</p>
             <p><strong>Điểm đến:</strong> {order.arriving}</p>
             <p><strong>Trạng thái:</strong> {order.orderStatus}</p>
+
+            <p><strong>Ngày đi:</strong> {dayjs(details.date[0]).format('YYYY-MM-DD')}</p>
+            <p><strong>Ngày về:</strong> {dayjs(details.date[1]).format('YYYY-MM-DD')}</p>
+            <p><strong>Người lớn:</strong> {details.passengers.adults}</p>
+            <p><strong>Trẻ em:</strong> {details.passengers.childrenUnder11}</p>
+            <p><strong>Trẻ nhỏ:</strong> {details.passengers.childrenUnder5}</p>
 
             <Divider />
 

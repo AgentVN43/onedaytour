@@ -22,7 +22,7 @@ const RoomAllocation = () => {
         const parsedData = JSON.parse(storedData);
 
         // Extract passengers from the stored data
-        const passengers = parsedData.passengers || 0;
+        const passengers = parsedData.totalpassenger || 0;
 
         // Set total guests
         setTotalGuests(passengers);

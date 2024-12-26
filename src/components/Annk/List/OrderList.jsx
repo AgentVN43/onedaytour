@@ -104,24 +104,16 @@ export default function OrderList() {
       key: "quotation",
       render: (text, record) => (
         <>
-          <Button type="primary" onClick={() => showModal(record.orderId)}>
+          <Button
+            type="primary"
+            onClick={(e) => {
+              e.stopPropagation(); // Ngăn chặn sự kiện click lan ra hàng
+              showModal(record.orderId);
+            }}
+          >
             Tạo báo giá
           </Button>
-          <Modal
-            open={isModalOpen}
-            onOk={() => handleOk(selectedOrderId)}
-            onCancel={handleCancel}
-            okText="Submit"
-            cancelText="Cancel"
-            width={'50%'}
-          >
-            <div className="relative -mx-6 -my-5">
-              <InfoTour form={form} />
-            </div>
-          </Modal>
         </>
-
-
       ),
     },
   ];
@@ -148,7 +140,23 @@ export default function OrderList() {
         columns={columns}
         rowKey="orderId"
         pagination={{ pageSize: 5 }}
+        onRow={(record) => ({
+          onClick: () => navigate(`/quote/detail/${record.orderId}`),
+        })}
       />
+
+      <Modal
+        open={isModalOpen}
+        onOk={() => handleOk(selectedOrderId)}
+        onCancel={handleCancel}
+        okText="Submit"
+        cancelText="Cancel"
+        width={'50%'}
+      >
+        <div className="relative -mx-6 -my-5">
+          <InfoTour form={form} />
+        </div>
+      </Modal>
     </>
   );
 }
