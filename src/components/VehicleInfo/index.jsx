@@ -288,7 +288,15 @@
 //     </>
 //   );
 // }
-import { Alert, Button, Card, Input, InputNumber, Table, Typography } from "antd";
+import {
+  Alert,
+  Button,
+  Card,
+  Input,
+  InputNumber,
+  Table,
+  Typography,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import { vehicleService } from "../../services/vehicleService";
 
@@ -439,7 +447,7 @@ export default function VehicleInfo() {
     setTableData(updatedTableData);
   };
 
-  console.log(tableData)
+  console.log(tableData);
 
   const columns = [
     {
@@ -466,6 +474,10 @@ export default function VehicleInfo() {
       title: "Đơn giá (mặt định)",
       dataIndex: "prices",
       key: "prices",
+      render: (value) => {
+        // Format the number with commas
+        return new Intl.NumberFormat("en-US").format(value);
+      },
     },
     {
       title: "Đơn giá bán",
@@ -482,8 +494,15 @@ export default function VehicleInfo() {
     {
       title: "Thành tiền",
       dataIndex: "prices",
-      render: (_, record) => <>{(record.count * (record.priceNew || record.prices)) || 0}</>,
+      render: (_, record) => {
+        // Calculate the total
+        const total = record.count * (record.priceNew || record.prices) || 0;
+    
+        // Format the total with thousand separators
+        return new Intl.NumberFormat('en-US').format(total);
+      },
     },
+    
   ];
 
   return (
