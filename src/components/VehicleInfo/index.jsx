@@ -135,7 +135,7 @@ export default function VehicleInfo() {
           seats: vehicle.seat,
           totalSeats: vehicle.totalSeats,
           type: vehicle.type,
-          price: vehicle.priceNew || vehicle.prices, // Include the updated price
+          prices: vehicle.priceNew || vehicle.prices, // Include the updated price
         })),
       };
 

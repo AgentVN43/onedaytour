@@ -1,9 +1,27 @@
-import React, { useState } from 'react';
-import { Select } from 'antd';
+import { Select } from "antd";
+import React, { useEffect, useState } from "react";
+import { accomTypeService } from "../../services/accomType";
 
 const { Option } = Select;
 
 const RoomTypeSelector = ({ selectedRoom, setSelectedRoom }) => {
+  const [accomType, setAccomtype] = useState([]);
+
+  const getAccomType = async () => {
+    try {
+      const res = await accomTypeService.getAll();
+      if (res && res.data) {
+        setAccomtype(res.data);
+      }
+    } catch (error) {
+      console.error("Error creating vehicle:", error);
+      alert("Failed to create vehicle.");
+    }
+  };
+
+  useEffect(() => {
+    getAccomType();
+  }, []);
 
   const handleChange = (value) => {
     setSelectedRoom(value);
@@ -11,7 +29,7 @@ const RoomTypeSelector = ({ selectedRoom, setSelectedRoom }) => {
   };
 
   return (
-    <div className='flex'>
+    <div className="flex">
       <h2 className="mr-2">Chọn hạng phòng</h2>
       <Select
         placeholder="Chọn hạng phòng"
@@ -19,9 +37,13 @@ const RoomTypeSelector = ({ selectedRoom, setSelectedRoom }) => {
         onChange={handleChange}
         value={selectedRoom}
       >
-        <Option value="standard">Tiêu chuẩn</Option>
-        <Option value="deluxe">Cao cấp</Option>
-        <Option value="suite">Thượng hạng</Option>
+      {
+        accomType.map((item) => (
+          <Option key={item._id} value={item._id}>
+            {item.type}
+          </Option>
+        ))
+      }
       </Select>
     </div>
   );
