@@ -189,9 +189,12 @@ const RoomAllocation = () => {
         const accommodation = {
           selectedRoom: selectedRoom,
           prices: selectedPrice,
+          nights: numberOfNights,
+          totalRooms: allocation.totalRooms,
           onePersonRooms: allocation.onePersonRooms,
           twoPersonRooms: allocation.twoPersonRooms,
           threePersonRooms: allocation.threePersonRooms,
+          provisional: provisional,
         };
 
         // Add accommodation to the stored data
