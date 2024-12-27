@@ -6,6 +6,7 @@ const TourQuotation = () => {
 
     const order = JSON.parse(localStorage.getItem("orderInfo"));
     const details = JSON.parse(localStorage.getItem("tourInfo"));
+    console.log("🚀 ~ TourQuotation ~ details:", details)
     const totalServiceCost = details.service?.reduce(
         (total, service) => total + service.prices * (service.quantity || 1),
         0
@@ -114,8 +115,8 @@ const TourQuotation = () => {
         },
         {
             title: "Đơn giá",
-            dataIndex: "price",
-            key: "price",
+            dataIndex: "prices",
+            key: "prices",
         },
         {
             title: "Số lượng xe",
@@ -126,7 +127,7 @@ const TourQuotation = () => {
             title: "Thành tiền",
             dataIndex: "total",
             key: "total",
-            render: (_, record) => `${(record.price * record.quantity).toLocaleString()} VND`,
+            render: (_, record) => `${(record.prices * record.quantity).toLocaleString()} VND`,
         },
     ];
 
