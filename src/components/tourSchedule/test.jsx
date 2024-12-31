@@ -3,13 +3,13 @@ import dayjs from "dayjs";
 import React from "react";
 
 const TourQuotation = () => {
-  const order = JSON.parse(localStorage.getItem("orderInfo"));
-  const details = JSON.parse(localStorage.getItem("tourInfo"));
 
-  const totalServiceCost = details.service?.reduce(
-    (total, service) => total + service.prices * (service.quantity || 1),
-    0
-  );
+    const order = JSON.parse(localStorage.getItem("orderInfo"));
+    const details = JSON.parse(localStorage.getItem("tourInfo"));
+    const totalServiceCost = details.service?.reduce(
+        (total, service) => total + service.prices * (service.quantity || 1),
+        0
+    );
 
   const accomCost = details.accommodation?.provisional;
   const vehicleCost = details.vehicles?.reduce(
@@ -108,36 +108,35 @@ const TourQuotation = () => {
     }))
   );
 
-  // Table columns for vehicles
-  const vehicleColumns = [
-    {
-      title: "Loại xe",
-      dataIndex: "vehicleName",
-      key: "vehicleName",
-    },
-    {
-      title: "Số ghế",
-      dataIndex: "seats",
-      key: "seats",
-    },
-    {
-      title: "Đơn giá",
-      dataIndex: "price",
-      key: "price",
-    },
-    {
-      title: "Số lượng xe",
-      dataIndex: "quantity",
-      key: "quantity",
-    },
-    {
-      title: "Thành tiền",
-      dataIndex: "total",
-      key: "total",
-      render: (_, record) =>
-        `${(record.price * record.quantity).toLocaleString()} VND`,
-    },
-  ];
+    // Table columns for vehicles
+    const vehicleColumns = [
+        {
+            title: "Loại xe",
+            dataIndex: "vehicleName",
+            key: "vehicleName",
+        },
+        {
+            title: "Số ghế",
+            dataIndex: "seats",
+            key: "seats",
+        },
+        {
+            title: "Đơn giá",
+            dataIndex: "price",
+            key: "price",
+        },
+        {
+            title: "Số lượng xe",
+            dataIndex: "quantity",
+            key: "quantity",
+        },
+        {
+            title: "Thành tiền",
+            dataIndex: "total",
+            key: "total",
+            render: (_, record) => `${(record.price * record.quantity).toLocaleString()} VND`,
+        },
+    ];
 
   return (
     <Card title="Báo giá Tour Du Lịch">
