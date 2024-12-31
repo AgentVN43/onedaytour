@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
 import { Button, message, Steps, theme } from "antd";
-import FormInfo from "../components/Annk/Form/OrderForm";
+import React, { useState } from "react";
 
 // import { provincesService } from "../services/provincesService";
 // import BreadcrumbC from "../components/Breadcrumb";
@@ -10,42 +9,30 @@ import FormInfo from "../components/Annk/Form/OrderForm";
 // import MealsInfo from "../components/mealsInfo";
 // import ServicesInfo from "../components/servicesInfo";
 
-import { provincesService } from "../services/provincesService";
-import BreadcrumbC from "../components/Breadcrumb";
-import HotelInfo from "../components/hotelInfo";
-import VehicleInfo from "../components/vehicleInfo";
 import MealsInfo from "../components/mealsInfo";
 import ServicesInfo from "../components/servicesInfo";
 // import TourQuotation from "../components/tourSchedule";
-import { useNavigate } from "react-router-dom";
 import RoomAllocation from "../components/hotelInfo/RoomAllocation";
 import TourQuotation from "../components/tourSchedule/test";
+import VehicleInfo from "../components/VehicleInfo";
 
 export default function TourPage() {
   const steps = [
     {
       title: "Di chuyển",
-      content: (
-        <VehicleInfo />
-      ),
+      content: <VehicleInfo />,
     },
     {
       title: "Lưu trú",
-      content: (
-        <RoomAllocation />
-      ),
+      content: <RoomAllocation />,
     },
     {
       title: "Ăn uống",
-      content: (
-        <MealsInfo />
-      ),
+      content: <MealsInfo />,
     },
     {
       title: "Thông tin dịch vụ",
-      content: (
-        <ServicesInfo />
-      ),
+      content: <ServicesInfo />,
     },
     {
       title: "Báo giá",
@@ -56,6 +43,44 @@ export default function TourPage() {
   // steps
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
+
+  const order = JSON.parse(localStorage.getItem("orderInfo"));
+  const details = JSON.parse(localStorage.getItem("tourInfo"));
+
+  const totalServiceCost = details.service?.reduce(
+    (total, service) => total + service.prices * (service.quantity || 1),
+    0
+  );
+
+  const totalMealCost = details.meals?.reduce((total, meal) => {
+    return (
+      total +
+      meal.sessions?.reduce(
+        (sessionTotal, session) =>
+          sessionTotal +
+          parseInt(session.pricePerPortion || 0) * session.portionCount,
+        0
+      )
+    );
+  }, 0);
+
+  const accomCost = details.accommodation?.provisional;
+  const vehicleCost = details.vehicles?.reduce(
+    (total, vehicle) => total + vehicle.prices,
+    0
+  );
+
+  const totalCost = totalServiceCost + totalMealCost + accomCost + vehicleCost;
+
+  const mergedData = {
+    quoteId: order?.orderId,
+    orderId: order?.orderId,
+    totalPrice: totalCost,
+    departureDate: details?.date[0],
+    returnDate: details?.date[1],
+    ...details,
+  };
+
   const next = () => {
     setCurrent(current + 1);
   };
@@ -65,6 +90,11 @@ export default function TourPage() {
 
   const handleStepClick = (stepIndex) => {
     setCurrent(stepIndex);
+  };
+
+  const handleSubmit = () => {
+    console.log("Collected Data:", mergedData);
+    message.success("Tour information submitted successfully!");
   };
 
   const items = steps.map((item) => ({
@@ -79,6 +109,7 @@ export default function TourPage() {
     border: `1px dashed ${token.colorBorder}`,
     marginTop: 16,
   };
+
   return (
     <>
       <div className="flex space-x-4">
@@ -110,10 +141,7 @@ export default function TourPage() {
                   </Button>
                 )}
                 {current === steps.length - 1 && (
-                  <Button
-                    type="primary"
-                    onClick={() => message.success("Processing complete!")}
-                  >
+                  <Button type="primary" onClick={() => handleSubmit(next())}>
                     Done
                   </Button>
                 )}

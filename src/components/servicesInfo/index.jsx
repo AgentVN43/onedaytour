@@ -19,6 +19,9 @@ export default function ServicesInfo() {
     if (resCategory && resCategory?.data)
       setCategorys(resCategory?.data)
   }
+
+  console.log(categorys)
+
   const getServiceCategoryById = async (categoryId) => {
     try {
       const res = await service.getServiceCategoryById(categoryId);

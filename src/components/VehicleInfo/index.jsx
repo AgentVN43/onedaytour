@@ -1,4 +1,12 @@
-import { Alert, Button, Card, Input, InputNumber, Table, Typography } from "antd";
+import {
+  Alert,
+  Button,
+  Card,
+  Input,
+  InputNumber,
+  Table,
+  Typography,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import { vehicleService } from "../../services/vehicleService";
 
@@ -120,11 +128,19 @@ export default function VehicleInfo() {
     }
   };
 
+  console.log(result);
+
   const handleModalConfirm = () => {
     if (result && !result.error) {
       const confirmedData = {
         ...tourInfo,
-        totalpassenger:result.passengers,
+        passengers: {
+          ...tourInfo.passengers, // Retain existing passenger properties
+          total:
+            parseInt(tourInfo.passengers.adults || 0) +
+            parseInt(tourInfo.passengers.childrenUnder11 || 0) +
+            parseInt(tourInfo.passengers.childrenUnder5 || 0), // Calculate total passengers
+        },
         totalVehicles: result.totalVehicles,
         totalCapacity: result.totalCapacity,
         utilizationRate: result.utilizationRate,
@@ -200,12 +216,11 @@ export default function VehicleInfo() {
       render: (_, record) => {
         // Calculate the total
         const total = record.count * (record.priceNew || record.prices) || 0;
-    
+
         // Format the total with thousand separators
-        return new Intl.NumberFormat('en-US').format(total);
+        return new Intl.NumberFormat("en-US").format(total);
       },
     },
-    
   ];
 
   return (

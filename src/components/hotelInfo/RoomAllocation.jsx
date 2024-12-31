@@ -41,7 +41,7 @@ const RoomAllocation = () => {
         const parsedData = JSON.parse(storedData);
         console.log(parsedData);
         // Extract passengers from the stored data
-        const passengers = parsedData.totalpassenger || 0;
+        const passengers = parsedData.passengers?.total || 0;
         const date = parsedData.date || 0;
         // Set total guests
         setTotalGuests(passengers);
