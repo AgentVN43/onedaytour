@@ -1,5 +1,9 @@
-import React, { useState } from "react";
-import { Card, Modal, Row, Col, Descriptions } from "antd";
+import React, { useEffect, useState } from "react";
+import { Card, Modal, Row, Col, Descriptions, Button } from "antd";
+import { orderService } from "../../services/orderService";
+import { quoteService } from "../../services/quoteService";
+import { useNavigate, useParams } from "react-router-dom";
+import { CalculatorOutlined } from "@ant-design/icons";
 
 const data = {
   customer: {
@@ -48,7 +52,14 @@ const data = {
 
 const DetailQuotes = () => {
   const [visible, setVisible] = useState(false);
+  const [quotes, setQuotes] = useState([])
+  console.log("🚀 ~ DetailQuotes ~ quotes:", quotes)
+  const [order, setOrder] = useState([])
+  console.log("🚀 ~ DetailQuotes ~ order:", order)
   const [selectedQuotation, setSelectedQuotation] = useState(null);
+
+  const { orderId } = useParams();
+  const navigate = useNavigate();
 
   const quotations = [
     { id: 1, title: "Báo giá 1" },
@@ -56,6 +67,17 @@ const DetailQuotes = () => {
     { id: 3, title: "Báo giá 3" },
   ];
 
+  const getById = async (orderId) => {
+    const resOrder = await orderService.getById(orderId)
+    if (resOrder && resOrder?.data) {
+      setOrder(resOrder?.data)
+    }
+    const res = await quoteService.getById(orderId)
+    if (res && res?.data) {
+      setQuotes(res?.data)
+    }
+
+  }
   const handleCardClick = (quotationId) => {
     setSelectedQuotation(quotations.find((q) => q.id === quotationId));
     setVisible(true);
@@ -66,8 +88,17 @@ const DetailQuotes = () => {
     setSelectedQuotation(null);
   };
 
+  useEffect(() => {
+    getById(orderId)
+  }, [])
   return (
     <>
+      <div className="flex justify-between">
+        <h2 className="text-2xl font-bold mb-4">Chi tiết đơn hàng</h2>
+        <Button onClick={() => navigate('/compare-quotes')}>
+          <CalculatorOutlined /> So sánh
+        </Button>
+      </div>
       <Row gutter={16}>
         {quotations.map((quote) => (
           <Col span={8} key={quote.id}>
@@ -76,9 +107,9 @@ const DetailQuotes = () => {
               hoverable
               onClick={() => handleCardClick(quote.id)}
             >
-              <p>Khách hàng: {data.customer.name}</p>
-              <p>Điểm đi: {data.departing}</p>
-              <p>Điểm đến: {data.arriving}</p>
+              <p>Khách hàng: {order?.customer?.name}</p>
+              <p>Điểm đi: {order?.departing}</p>
+              <p>Điểm đến: {order?.arriving}</p>
             </Card>
           </Col>
         ))}

@@ -14,9 +14,12 @@ import ServicesInfo from "../components/servicesInfo";
 // import TourQuotation from "../components/tourSchedule";
 import RoomAllocation from "../components/hotelInfo/RoomAllocation";
 import TourQuotation from "../components/tourSchedule/test";
-import VehicleInfo from "../components/VehicleInfo";
+import VehicleInfo from "../components/vehicleInfo";
+import { quoteService } from "../services/quoteService";
+import { useNavigate } from "react-router-dom";
 
 export default function TourPage() {
+  const navigate = useNavigate()
   const steps = [
     {
       title: "Di chuyển",
@@ -92,9 +95,11 @@ export default function TourPage() {
     setCurrent(stepIndex);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    await quoteService.create(mergedData)
     console.log("Collected Data:", mergedData);
     message.success("Tour information submitted successfully!");
+    navigate(`/quote/detail/${mergedData?.orderId}`)
   };
 
   const items = steps.map((item) => ({
@@ -141,7 +146,7 @@ export default function TourPage() {
                   </Button>
                 )}
                 {current === steps.length - 1 && (
-                  <Button type="primary" onClick={() => handleSubmit(next())}>
+                  <Button type="primary" onClick={() => handleSubmit()}>
                     Done
                   </Button>
                 )}

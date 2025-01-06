@@ -3,13 +3,13 @@ import dayjs from "dayjs";
 import React from "react";
 
 const TourQuotation = () => {
-
-    const order = JSON.parse(localStorage.getItem("orderInfo"));
-    const details = JSON.parse(localStorage.getItem("tourInfo"));
-    const totalServiceCost = details.service?.reduce(
-        (total, service) => total + service.prices * (service.quantity || 1),
-        0
-    );
+  const { Text, Title } = Typography;
+  const order = JSON.parse(localStorage.getItem("orderInfo"));
+  const details = JSON.parse(localStorage.getItem("tourInfo"));
+  const totalServiceCost = details.service?.reduce(
+    (total, service) => total + service.prices * (service.quantity || 1),
+    0
+  );
 
   const accomCost = details.accommodation?.provisional;
   const vehicleCost = details.vehicles?.reduce(
@@ -108,83 +108,132 @@ const TourQuotation = () => {
     }))
   );
 
-    // Table columns for vehicles
-    const vehicleColumns = [
-        {
-            title: "Loại xe",
-            dataIndex: "vehicleName",
-            key: "vehicleName",
-        },
-        {
-            title: "Số ghế",
-            dataIndex: "seats",
-            key: "seats",
-        },
-        {
-            title: "Đơn giá",
-            dataIndex: "price",
-            key: "price",
-        },
-        {
-            title: "Số lượng xe",
-            dataIndex: "quantity",
-            key: "quantity",
-        },
-        {
-            title: "Thành tiền",
-            dataIndex: "total",
-            key: "total",
-            render: (_, record) => `${(record.price * record.quantity).toLocaleString()} VND`,
-        },
-    ];
-
+  // Table columns for vehicles
+  const vehicleColumns = [
+    {
+      title: "Loại xe",
+      dataIndex: "vehicleName",
+      key: "vehicleName",
+    },
+    {
+      title: "Số ghế",
+      dataIndex: "seats",
+      key: "seats",
+    },
+    {
+      title: "Đơn giá",
+      dataIndex: "price",
+      key: "price",
+    },
+    {
+      title: "Số lượng xe",
+      dataIndex: "quantity",
+      key: "quantity",
+    },
+    {
+      title: "Thành tiền",
+      dataIndex: "total",
+      key: "total",
+      render: (_, record) => `${(record.price * record.quantity).toLocaleString()} VND`,
+    },
+  ];
+  const accommodationColumns = [
+    {
+      title: "Mã phòng",
+      dataIndex: "selectedRoom",
+      key: "selectedRoom",
+    },
+    {
+      title: "Giá phòng",
+      dataIndex: "prices",
+      key: "prices",
+      render: (price) => `${price.toLocaleString()} VND`,
+    },
+    {
+      title: "Số đêm",
+      dataIndex: "nights",
+      key: "nights",
+    },
+    {
+      title: "Tổng số phòng",
+      dataIndex: "totalRooms",
+      key: "totalRooms",
+    },
+    {
+      title: "Số phòng 1 người",
+      dataIndex: "onePersonRooms",
+      key: "onePersonRooms",
+    },
+    {
+      title: "Số phòng 2 người",
+      dataIndex: "twoPersonRooms",
+      key: "twoPersonRooms",
+    },
+    {
+      title: "Số phòng 3 người",
+      dataIndex: "threePersonRooms",
+      key: "threePersonRooms",
+    },
+    {
+      title: "Tạm tính",
+      dataIndex: "provisional",
+      key: "provisional",
+      render: (price) => (
+        <Title level={5}>
+          {price.toLocaleString()} VND
+        </Title>
+      ),
+    },
+  ];
   return (
     <Card title="Báo giá Tour Du Lịch">
-      <Typography.Title level={4}>Thông tin khách hàng</Typography.Title>
-      <p>
-        <strong>Tên:</strong> {order.customer.name}
-      </p>
-      <p>
-        <strong>Điện thoại:</strong> {order.customer.phone}
-      </p>
-      <p>
-        <strong>Email:</strong> {order.customer.email}
-      </p>
-      <p>
-        <strong>Zalo:</strong> {order.customer.zalo}
-      </p>
-
-      <Divider />
-
-      <Typography.Title level={4}>Thông tin đặt tour</Typography.Title>
-      <p>
-        <strong>Mã đơn hàng:</strong> {order.orderId}
-      </p>
-      <p>
-        <strong>Điểm đi:</strong> {order.departing}
-      </p>
-      <p>
-        <strong>Điểm đến:</strong> {order.arriving}
-      </p>
-      <p>
-        <strong>Trạng thái:</strong> {order.orderStatus}
-      </p>
-
-      <p>
-        <strong>Ngày đi:</strong> {dayjs(details.date[0]).format("YYYY-MM-DD")}
-      </p>
-      <p>
-        <strong>Ngày về:</strong> {dayjs(details.date[1]).format("YYYY-MM-DD")}
-      </p>
-      <p>
-        <strong>Người lớn:</strong> {details.passengers.adults}
-      </p>
-      <p>
-        <strong>Trẻ em:</strong> {details.passengers.childrenUnder11}
-      </p>
-      <p>
-        <strong>Trẻ nhỏ:</strong> {details.passengers.childrenUnder5}
-      </p>
+      <Row gutter={[16, 16]}>
+        <Col span={12}>
+          <Typography.Title level={4}>Thông tin khách hàng</Typography.Title>
+          <p>
+            <strong>Tên:</strong> {order.customer.name}
+          </p>
+          <p>
+            <strong>Điện thoại:</strong> {order.customer.phone}
+          </p>
+          <p>
+            <strong>Email:</strong> {order.customer.email}
+          </p>
+          <p>
+            <strong>Zalo:</strong> {order.customer.zalo}
+          </p>
+        </Col>
+        <Col span={12}>
+          <Typography.Title level={4}>Thông tin đặt tour</Typography.Title>
+          <p>
+            <strong>Mã đơn hàng:</strong> {order.orderId}
+          </p>
+          <p>
+            <strong>Điểm đi:</strong> {order.departing}
+          </p>
+          <p>
+            <strong>Điểm đến:</strong> {order.arriving}
+          </p>
+          <p>
+            <strong>Trạng thái:</strong> {order.orderStatus}
+          </p>
+          <p>
+            <strong>Ngày đi:</strong> {dayjs(details.date[0]).format("YYYY-MM-DD")}
+          </p>
+          <p>
+            <strong>Ngày về:</strong> {dayjs(details.date[1]).format("YYYY-MM-DD")}
+          </p>
+          <p>
+            <strong>Người lớn:</strong> {details.passengers.adults}
+          </p>
+          <p>
+            <strong>Trẻ em:</strong> {details.passengers.childrenUnder11}
+          </p>
+          <p>
+            <strong>Trẻ nhỏ:</strong> {details.passengers.childrenUnder5}
+          </p>
+        </Col>
+      </Row>
 
       <Divider />
 
@@ -195,8 +244,16 @@ const TourQuotation = () => {
         rowKey="vehicleId"
         pagination={false}
       />
+      <Divider />
 
       <Divider />
+      <Typography.Title level={4}>Chi tiết lưu trú</Typography.Title>
+      <Table
+        dataSource={[details.accommodation]}
+        columns={accommodationColumns}
+        rowKey="selectedRoom"
+        pagination={false}
+      />
 
       <Typography.Title level={4}>Chi tiết dịch vụ</Typography.Title>
       <Table
@@ -205,7 +262,6 @@ const TourQuotation = () => {
         rowKey="_id"
         pagination={false}
       />
-
       <Divider />
 
       <Typography.Title level={4}>Chi tiết bữa ăn</Typography.Title>
@@ -216,8 +272,6 @@ const TourQuotation = () => {
         pagination={false}
       />
 
-      <Divider />
-
       <Typography.Title level={4}>Tổng cộng</Typography.Title>
       <Row>
         <Col span={12}>
@@ -227,13 +281,14 @@ const TourQuotation = () => {
       </Row>
       <Row>
         <Col span={12}>
+
           <strong>Tổng chi phí bữa ăn:</strong>
         </Col>
         <Col span={12}>{totalMealCost.toLocaleString()} VND</Col>
       </Row>
       <Row>
         <Col span={12}>
-          <strong>Tổng chi phí accom:</strong>
+          <strong>Tổng chi phí lưu trú:</strong>
         </Col>
         <Col span={12}>{accomCost.toLocaleString()} VND</Col>
       </Row>
@@ -253,8 +308,7 @@ const TourQuotation = () => {
             totalMealCost +
             accomCost +
             vehicleCost
-          ).toLocaleString()}{" "}
-          VND
+          ).toLocaleString()} VND
         </Col>
       </Row>
     </Card>
