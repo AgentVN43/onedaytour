@@ -1,6 +1,8 @@
 import { Card, Col, Divider, Row, Table, Typography } from "antd";
 import dayjs from "dayjs";
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchOrders } from "../../Redux/Action/actOrder";
 
 const TourQuotation = () => {
   const { Text, Title } = Typography;
@@ -10,6 +12,12 @@ const TourQuotation = () => {
     (total, service) => total + service.prices * (service.quantity || 1),
     0
   );
+  const dispatch = useDispatch();
+  const orders = useSelector((state) => state.order.orders);
+
+  useEffect(() => {
+    dispatch(fetchOrders());
+  }, [dispatch]);
 
   const accomCost = details.accommodation?.provisional;
   const vehicleCost = details.vehicles?.reduce(
@@ -55,7 +63,6 @@ const TourQuotation = () => {
         `${(record.prices * (record.quantity || 1)).toLocaleString()} VND`,
     },
   ];
-
 
   const getRowSpanForDate = (value, index, mealData) => {
     const previousDate = index > 0 ? mealData[index - 1]?.date : null;
@@ -134,7 +141,8 @@ const TourQuotation = () => {
       title: "Thành tiền",
       dataIndex: "total",
       key: "total",
-      render: (_, record) => `${(record.price * record.quantity).toLocaleString()} VND`,
+      render: (_, record) =>
+        `${(record.price * record.quantity).toLocaleString()} VND`,
     },
   ];
   const accommodationColumns = [
@@ -178,11 +186,7 @@ const TourQuotation = () => {
       title: "Tạm tính",
       dataIndex: "provisional",
       key: "provisional",
-      render: (price) => (
-        <Title level={5}>
-          {price.toLocaleString()} VND
-        </Title>
-      ),
+      render: (price) => <Title level={5}>{price.toLocaleString()} VND</Title>,
     },
   ];
   return (
@@ -218,10 +222,12 @@ const TourQuotation = () => {
             <strong>Trạng thái:</strong> {order.orderStatus}
           </p>
           <p>
-            <strong>Ngày đi:</strong> {dayjs(details.date[0]).format("YYYY-MM-DD")}
+            <strong>Ngày đi:</strong>{" "}
+            {dayjs(details.date[0]).format("YYYY-MM-DD")}
           </p>
           <p>
-            <strong>Ngày về:</strong> {dayjs(details.date[1]).format("YYYY-MM-DD")}
+            <strong>Ngày về:</strong>{" "}
+            {dayjs(details.date[1]).format("YYYY-MM-DD")}
           </p>
           <p>
             <strong>Người lớn:</strong> {details.passengers.adults}
@@ -281,7 +287,6 @@ const TourQuotation = () => {
       </Row>
       <Row>
         <Col span={12}>
-
           <strong>Tổng chi phí bữa ăn:</strong>
         </Col>
         <Col span={12}>{totalMealCost.toLocaleString()} VND</Col>
@@ -308,7 +313,8 @@ const TourQuotation = () => {
             totalMealCost +
             accomCost +
             vehicleCost
-          ).toLocaleString()} VND
+          ).toLocaleString()}{" "}
+          VND
         </Col>
       </Row>
     </Card>
