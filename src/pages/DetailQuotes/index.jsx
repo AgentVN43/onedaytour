@@ -72,7 +72,7 @@ const DetailQuotes = () => {
     if (resOrder && resOrder?.data) {
       setOrder(resOrder?.data)
     }
-    const res = await quoteService.getById(orderId)
+    const res = await quoteService.getByOrderId(orderId)
     if (res && res?.data) {
       setQuotes(res?.data)
     }

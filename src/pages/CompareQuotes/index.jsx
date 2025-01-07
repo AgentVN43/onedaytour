@@ -1,5 +1,5 @@
-import React from 'react';
-import { Table, Typography, Divider, Collapse } from 'antd';
+import React, { useState } from 'react';
+import { Table, Typography, Divider, Collapse, Select } from 'antd';
 const { Panel } = Collapse;
 
 const { Title } = Typography;
@@ -9,145 +9,88 @@ const CompareQuotes = () => {
         passengers: {
             adults: 2,
             childrenUnder5: 1,
-            childrenUnder11: 0,
-            total: 3
+            childrenUnder11: 1,
+            total: 4,
         },
         accommodation: {
-            selectedRoom: 'Deluxe Room',
+            selectedRoom: 'Deluxe',
             onePersonRooms: 1,
-            twoPersonRooms: 1,
-            threePersonRooms: 0
+            twoPersonRooms: 2,
+            threePersonRooms: 1,
         },
         vehicles: [
-            {
-                vehicleId: '64b7fbd5e4b00c3e00123456',
-                vehicleName: 'Toyota Hiace',
-                seats: 12,
-                quantity: 1,
-                priceNew: 500
-            }
-        ],
-        meals: [
-            {
-                date: '2024-01-15',
-                sessions: [
-                    {
-                        session: 'Lunch',
-                        restaurant: 'Sea View Restaurant',
-                        portionCount: 3,
-                        pricePerPortion: '64b7fbd5e4b00c3e00987654',
-                        note: 'Vegetarian options available'
-                    },
-                    {
-                        session: 'Dinner',
-                        restaurant: 'Sunset Grill',
-                        portionCount: 3,
-                        pricePerPortion: '64b7fbd5e4b00c3e00987655',
-                        note: 'Seafood specialties'
-                    }
-                ]
-            }
+            { vehicleName: 'Bus', quantity: 1, seats: 20, priceNew: 100 },
+            { vehicleName: 'Car', quantity: 2, seats: 4, priceNew: 50 },
         ],
         services: [
-            {
-                serviceId: '64b7fbd5e4b00c3e00111111',
-                serviceName: 'Tour Guide',
-                category: 'Human Resources',
-                price: 100,
-                quantity: 1
-            },
-            {
-                serviceId: '64b7fbd5e4b00c3e00222222',
-                serviceName: 'Travel Insurance',
-                category: 'Insurance',
-                price: 50,
-                quantity: 3
-            }
+            { serviceName: 'Guide', quantity: 2, price: 30 },
+            { serviceName: 'Meal', quantity: 4, price: 20 },
         ],
-        utilizationRate: 85.5,
-        totalVehicles: 1,
-        totalPrice: 1500
+        totalPrice: 1000,
+        utilizationRate: 80,
     };
 
     const data2 = {
         passengers: {
-            adults: 5,
-            childrenUnder5: 0,
-            childrenUnder11: 3,
-            total: 8
+            adults: 3,
+            childrenUnder5: 2,
+            childrenUnder11: 1,
+            total: 6,
         },
         accommodation: {
-            selectedRoom: '676e348443d123f4937222c5',
-            onePersonRooms: 0,
-            twoPersonRooms: 4,
-            threePersonRooms: 0
+            selectedRoom: 'Standard',
+            onePersonRooms: 2,
+            twoPersonRooms: 1,
+            threePersonRooms: 2,
         },
         vehicles: [
-            {
-                vehicleId: '67234b8d7c85e443d6199f8f',
-                vehicleName: 'Xe du lịch 29',
-                seats: 29,
-                quantity: 1,
-                prices: 1500000
-            }
-        ],
-        meals: [
-            {
-                date: '1/1/2025',
-                sessions: [
-                    {
-                        session: 'Sáng',
-                        restaurant: '',
-                        portionCount: 8,
-                        pricePerPortion: '6761a5bee08f7dbdc19b13ac',
-                        note: ''
-                    }
-                ]
-            },
-            {
-                date: '2/1/2025',
-                sessions: [
-                    {
-                        session: 'Sáng',
-                        restaurant: '',
-                        portionCount: 8,
-                        pricePerPortion: '6761a5bee08f7dbdc19b13ac',
-                        note: ''
-                    }
-                ]
-            },
-            {
-                date: '3/1/2025',
-                sessions: [
-                    {
-                        session: 'Sáng',
-                        restaurant: '',
-                        portionCount: 8,
-                        pricePerPortion: '6761a5bee08f7dbdc19b13ac',
-                        note: ''
-                    }
-                ]
-            }
+            { vehicleName: 'Bus', quantity: 2, seats: 20, priceNew: 120 },
+            { vehicleName: 'Car', quantity: 3, seats: 4, priceNew: 60 },
         ],
         services: [
-            {
-                serviceId: '64b7fbd5e4b00c3e00111111',
-                serviceName: 'Tour Guide',
-                category: 'Human Resources',
-                price: 100,
-                quantity: 1
-            },
-            {
-                serviceId: '64b7fbd5e4b00c3e00222222',
-                serviceName: 'Travel Insurance',
-                category: 'Insurance',
-                price: 50,
-                quantity: 3
-            }
+            { serviceName: 'Guide', quantity: 3, price: 35 },
+            { serviceName: 'Meal', quantity: 6, price: 25 },
         ],
-        utilizationRate: 27.6,
-        totalVehicles: 1,
-        totalPrice: 319776401500000
+        totalPrice: 1200,
+        utilizationRate: 85,
+    };
+
+    const data3 = {
+        passengers: {
+            adults: 4,
+            childrenUnder5: 1,
+            childrenUnder11: 2,
+            total: 7,
+        },
+        accommodation: {
+            selectedRoom: 'Suite',
+            onePersonRooms: 1,
+            twoPersonRooms: 3,
+            threePersonRooms: 1,
+        },
+        vehicles: [
+            { vehicleName: 'Bus', quantity: 2, seats: 25, priceNew: 150 },
+            { vehicleName: 'Car', quantity: 2, seats: 6, priceNew: 70 },
+        ],
+        services: [
+            { serviceName: 'Guide', quantity: 4, price: 40 },
+            { serviceName: 'Meal', quantity: 7, price: 30 },
+        ],
+        totalPrice: 1500,
+        utilizationRate: 90,
+    };
+
+    const quotes = [data1, data2, data3];
+
+    const [selectedQuoteIndex1, setSelectedQuoteIndex1] = useState(0);
+    const [selectedQuoteIndex2, setSelectedQuoteIndex2] = useState(1);
+
+    const handleQuote1Change = (value) => {
+        setSelectedQuoteIndex1(value);
+    };
+
+    const handleQuote2Change = (value) => {
+        setSelectedQuoteIndex2(value);
     };
 
     const columns = [
@@ -176,7 +119,7 @@ const CompareQuotes = () => {
 
     const generateTableData = (data, quote1) => {
         if (!data || !quote1) {
-            return []; // Return empty array if data or quote1 is undefined
+            return [];
         }
 
         return [
@@ -221,19 +164,36 @@ const CompareQuotes = () => {
         ];
     };
 
-
     return (
         <div style={{ padding: '20px' }}>
             <Title level={2} style={{ textAlign: 'center' }}>Compare Quotes</Title>
+            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+                <Select defaultValue={0} onChange={handleQuote1Change} style={{ width: 200, marginRight: 20 }}>
+                    {quotes.map((_, index) => (
+                        <Select.Option key={index} value={index}>
+                            Báo giá {index + 1}
+                        </Select.Option>
+                    ))}
+                </Select>
+                <Select defaultValue={1} onChange={handleQuote2Change} style={{ width: 200 }}>
+                    {quotes.map((_, index) => (
+                        <Select.Option key={index} value={index}>
+                            Báo giá {index + 1}
+                        </Select.Option>
+                    ))}
+                </Select>
+            </div>
+
             <Collapse defaultActiveKey={['1', '2', '3', '4', '5']}>
                 {/* Passenger Information */}
                 <Panel header={<Divider orientation="left" style={{ fontSize: '14px', margin: '0px' }}>Passenger Information</Divider>} key="1">
                     <Table
                         columns={columns}
-                        dataSource={generateTableData(data1, data2)}
+                        dataSource={generateTableData(quotes[selectedQuoteIndex1], quotes[selectedQuoteIndex2])}
                         bordered
                         pagination={false}
                         style={tableStyle}
+                        showHeader={false}
                         rowClassName="table-row"
                         tableLayout="auto"
                         components={{
@@ -248,10 +208,11 @@ const CompareQuotes = () => {
                 <Panel header={<Divider orientation="left" style={{ fontSize: '14px', margin: '0px' }}>Accommodation</Divider>} key="2">
                     <Table
                         columns={columns}
-                        dataSource={generateAccommodationData(data1, data2)}
+                        dataSource={generateAccommodationData(quotes[selectedQuoteIndex1], quotes[selectedQuoteIndex2])}
                         bordered
                         pagination={false}
                         style={tableStyle}
+                        showHeader={false}
                         rowClassName="table-row"
                         tableLayout="auto"
                         components={{
@@ -263,15 +224,14 @@ const CompareQuotes = () => {
                 </Panel>
 
                 {/* Vehicles */}
-                {/* Repeat similar pattern for vehicles, services, and summary */}
-                {/* Vehicles */}
                 <Panel header={<Divider orientation="left" style={{ fontSize: '14px', margin: '0px' }}>Vehicles</Divider>} key="3">
                     <Table
                         columns={columns}
-                        dataSource={generateVehiclesData(data1, data2)}
+                        dataSource={generateVehiclesData(quotes[selectedQuoteIndex1], quotes[selectedQuoteIndex2])}
                         bordered
                         pagination={false}
                         style={tableStyle}
+                        showHeader={false}
                         rowClassName="table-row"
                         tableLayout="auto"
                         components={{
@@ -286,10 +246,11 @@ const CompareQuotes = () => {
                 <Panel header={<Divider orientation="left" style={{ fontSize: '14px', margin: '0px' }}>Services</Divider>} key="4">
                     <Table
                         columns={columns}
-                        dataSource={generateServicesData(data1, data2)}
+                        dataSource={generateServicesData(quotes[selectedQuoteIndex1], quotes[selectedQuoteIndex2])}
                         bordered
                         pagination={false}
                         style={tableStyle}
+                        showHeader={false}
                         rowClassName="table-row"
                         tableLayout="auto"
                         components={{
@@ -304,10 +265,11 @@ const CompareQuotes = () => {
                 <Panel header={<Divider orientation="left" style={{ fontSize: '14px', margin: '0px' }}>Summary</Divider>} key="5">
                     <Table
                         columns={columns}
-                        dataSource={generateSummaryData(data1, data2)}
+                        dataSource={generateSummaryData(quotes[selectedQuoteIndex1], quotes[selectedQuoteIndex2])}
                         bordered
                         pagination={false}
                         style={tableStyle}
+                        showHeader={false}
                         rowClassName="table-row"
                         tableLayout="auto"
                         components={{
