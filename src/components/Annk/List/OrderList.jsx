@@ -164,10 +164,7 @@ import { useEffect, useState } from "react";
 import InfoTour from "../Form/InfoTour";
 import { CarOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchOrders,
-  fetchOrderById,
-} from "../../../Redux/Action/actOrder";
+import { fetchOrders, fetchOrderById } from "../../../Redux/Action/actOrder";
 
 export default function OrderList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -179,7 +176,6 @@ export default function OrderList() {
 
   // Get data from Redux store
   const orders = useSelector((state) => state.order.orders);
-
   // Fetch all orders on component mount
   useEffect(() => {
     dispatch(fetchOrders());

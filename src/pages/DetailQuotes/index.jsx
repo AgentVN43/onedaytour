@@ -4,6 +4,8 @@ import { orderService } from "../../services/orderService";
 import { quoteService } from "../../services/quoteService";
 import { useNavigate, useParams } from "react-router-dom";
 import { CalculatorOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchOrders } from "../../Redux/Action/actOrder";
 
 const data = {
   customer: {
@@ -52,14 +54,21 @@ const data = {
 
 const DetailQuotes = () => {
   const [visible, setVisible] = useState(false);
-  const [quotes, setQuotes] = useState([])
-  console.log("🚀 ~ DetailQuotes ~ quotes:", quotes)
-  const [order, setOrder] = useState([])
-  console.log("🚀 ~ DetailQuotes ~ order:", order)
+  const [quotes, setQuotes] = useState([]);
+  console.log("🚀 ~ DetailQuotes ~ quotes:", quotes);
+  const [order, setOrder] = useState([]);
+  console.log("🚀 ~ DetailQuotes ~ order:", order);
   const [selectedQuotation, setSelectedQuotation] = useState(null);
 
   const { orderId } = useParams();
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+  const orders = useSelector((state) => state.order.orders);
+
+  useEffect(() => {
+    dispatch(fetchOrders());
+  }, [dispatch]);
 
   const quotations = [
     { id: 1, title: "Báo giá 1" },
@@ -68,16 +77,15 @@ const DetailQuotes = () => {
   ];
 
   const getById = async (orderId) => {
-    const resOrder = await orderService.getById(orderId)
+    const resOrder = await orderService.getById(orderId);
     if (resOrder && resOrder?.data) {
-      setOrder(resOrder?.data)
+      setOrder(resOrder?.data);
     }
-    const res = await quoteService.getById(orderId)
+    const res = await quoteService.getById(orderId);
     if (res && res?.data) {
-      setQuotes(res?.data)
+      setQuotes(res?.data);
     }
-
-  }
+  };
   const handleCardClick = (quotationId) => {
     setSelectedQuotation(quotations.find((q) => q.id === quotationId));
     setVisible(true);
@@ -89,13 +97,13 @@ const DetailQuotes = () => {
   };
 
   useEffect(() => {
-    getById(orderId)
-  }, [])
+    getById(orderId);
+  }, []);
   return (
     <>
       <div className="flex justify-between">
         <h2 className="text-2xl font-bold mb-4">Chi tiết đơn hàng</h2>
-        <Button onClick={() => navigate('/compare-quotes')}>
+        <Button onClick={() => navigate("/compare-quotes")}>
           <CalculatorOutlined /> So sánh
         </Button>
       </div>
@@ -130,10 +138,18 @@ const DetailQuotes = () => {
             <Descriptions.Item label="Số điện thoại">
               {data.customer.phone}
             </Descriptions.Item>
-            <Descriptions.Item label="Email">{data.customer.email}</Descriptions.Item>
-            <Descriptions.Item label="Zalo">{data.customer.zalo}</Descriptions.Item>
-            <Descriptions.Item label="Điểm đi">{data.departing}</Descriptions.Item>
-            <Descriptions.Item label="Điểm đến">{data.arriving}</Descriptions.Item>
+            <Descriptions.Item label="Email">
+              {data.customer.email}
+            </Descriptions.Item>
+            <Descriptions.Item label="Zalo">
+              {data.customer.zalo}
+            </Descriptions.Item>
+            <Descriptions.Item label="Điểm đi">
+              {data.departing}
+            </Descriptions.Item>
+            <Descriptions.Item label="Điểm đến">
+              {data.arriving}
+            </Descriptions.Item>
             <Descriptions.Item label="Phương tiện">
               {data.vehicles.map((v) => (
                 <p key={v.vehicleName}>
