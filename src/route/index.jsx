@@ -9,6 +9,7 @@ import Province from "../pages/Province";
 import OrderForm from "../components/Annk/Form/OrderForm";
 import Quotes from "../pages/Quotes";
 import DetailQuotes from "../pages/DetailQuotes";
+import CompareQuotes from "../pages/CompareQuotes";
 
 export default function MainRoute() {
   return (
@@ -24,6 +25,7 @@ export default function MainRoute() {
         <Route path="/quote/:orderId" element={<QuotationForm />} />
         <Route path="/quote/detail/:orderId" element={<DetailQuotes />} />
         <Route path="/add-order/" element={<OrderForm />} />
+        <Route path="/compare-quotes" element={<CompareQuotes />} />
       </Routes>
     </>
   );
