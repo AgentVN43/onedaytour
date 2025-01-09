@@ -6,69 +6,89 @@ import { useNavigate, useParams } from "react-router-dom";
 import { CalculatorOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOrders } from "../../Redux/Action/actOrder";
+import moment from "moment";
 
-const data = {
-  customer: {
-    name: "annk2",
-    phone: "12312123",
-    email: "a@gmail.com",
-    zalo: "123123123",
-  },
-  orderId: "BGIBKA-00292990-990XE",
-  departing: "Bắc Giang",
-  arriving: "Bắc Kạn",
-  vehicles: [
-    {
-      vehicleName: "Xe du lịch 45",
-      quantity: 1,
-      seats: 45,
-    },
-    {
-      vehicleName: "Xe du lịch 29",
-      quantity: 1,
-      seats: 29,
-    },
-  ],
-  meals: [
-    {
-      date: "27/12/2024",
-      sessions: [
-        { session: "Sáng", portionCount: 40 },
-        { session: "Trưa", portionCount: 48 },
-        { session: "Tối", portionCount: 48 },
-      ],
-    },
-    {
-      date: "28/12/2024",
-      sessions: [
-        { session: "Sáng", portionCount: 48 },
-        { session: "Trưa", portionCount: 48 },
-      ],
-    },
-  ],
-  service: [
-    { services: "HDV và điều hành", prices: 600000, unit: "Người" },
-    { services: "Nước", prices: 5000, unit: "Chai", quantity: 48 },
-  ],
-};
+// const datas = {
+//   customer: {
+//     name: "annk2",
+//     phone: "12312123",
+//     email: "a@gmail.com",
+//     zalo: "123123123",
+//   },
+//   orderId: "BGIBKA-00292990-990XE",
+//   departing: "Bắc Giang",
+//   arriving: "Bắc Kạn",
+//   vehicles: [
+//     {
+//       vehicleName: "Xe du lịch 45",
+//       quantity: 1,
+//       seats: 45,
+//     },
+//     {
+//       vehicleName: "Xe du lịch 29",
+//       quantity: 1,
+//       seats: 29,
+//     },
+//   ],
+//   meals: [
+//     {
+//       date: "27/12/2024",
+//       sessions: [
+//         { session: "Sáng", portionCount: 40 },
+//         { session: "Trưa", portionCount: 48 },
+//         { session: "Tối", portionCount: 48 },
+//       ],
+//     },
+//     {
+//       date: "28/12/2024",
+//       sessions: [
+//         { session: "Sáng", portionCount: 48 },
+//         { session: "Trưa", portionCount: 48 },
+//       ],
+//     },
+//   ],
+//   service: [
+//     { services: "HDV và điều hành", prices: 600000, unit: "Người" },
+//     { services: "Nước", prices: 5000, unit: "Chai", quantity: 48 },
+//   ],
+// };
 
 const DetailQuotes = () => {
   const [visible, setVisible] = useState(false);
   const [quotes, setQuotes] = useState([]);
   console.log("🚀 ~ DetailQuotes ~ quotes:", quotes);
   const [order, setOrder] = useState([]);
-  console.log("🚀 ~ DetailQuotes ~ order:", order);
+  // console.log("🚀 ~ DetailQuotes ~ order:", order);
   const [selectedQuotation, setSelectedQuotation] = useState(null);
-
+  const [data, setData] = useState([]);
   const { orderId } = useParams();
   const navigate = useNavigate();
+  const [listQuotes, setListQuotes] = useState([]);
+  const dataOrders = useSelector((state) => state.orderData.orders); // Get orders from Redux store
 
-  const dispatch = useDispatch();
-  const orders = useSelector((state) => state.order.orders);
+  const getOrderData = (orderId) => {
+    if (!dataOrders || dataOrders.length === 0) {
+      console.log("Data orders are empty or not loaded!");
+      return null;
+    }
 
-  useEffect(() => {
-    dispatch(fetchOrders());
-  }, [dispatch]);
+    const order = dataOrders.find((item) => item.orderId === orderId);
+    if (order) {
+      return order;
+    } else {
+      console.log("Order not found!");
+      return null;
+    }
+  };
+
+  const getListQuotes = async (orderId) => {
+    try {
+      const data = await quoteService.getByOrderId(orderId);
+      setListQuotes(data.data.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const quotations = [
     { id: 1, title: "Báo giá 1" },
@@ -86,8 +106,15 @@ const DetailQuotes = () => {
       setQuotes(res?.data);
     }
   };
-  const handleCardClick = (quotationId) => {
-    setSelectedQuotation(quotations.find((q) => q.id === quotationId));
+
+  // const handleCardClick = (quotationId) => {
+  //   setSelectedQuotation(data.find((q) => q._id === quotationId));
+  //   setVisible(true);
+  // };
+
+  const handleCardClick = (quoteId) => {
+    const quote = listQuotes.find((item) => item._id === quoteId); // Find the selected quote
+    setSelectedQuotation(quote); // Set selected quote
     setVisible(true);
   };
 
@@ -97,7 +124,19 @@ const DetailQuotes = () => {
   };
 
   useEffect(() => {
+    const orderData = getOrderData(orderId);
+    if (orderData) {
+      setData(orderData);
+    }
+  }, [orderId, dataOrders]); // Dependencies ensure this runs only when orderId or dataOrders changes
+
+  console.log(listQuotes);
+
+  console.log(selectedQuotation)
+
+  useEffect(() => {
     getById(orderId);
+    getListQuotes(orderId);
   }, []);
   return (
     <>
@@ -107,8 +146,8 @@ const DetailQuotes = () => {
           <CalculatorOutlined /> So sánh
         </Button>
       </div>
-      <Row gutter={16}>
-        {quotations.map((quote) => (
+      {/* <Row gutter={16}>
+        {data.map((quote) => (
           <Col span={8} key={quote.id}>
             <Card
               title={quote.title}
@@ -118,6 +157,23 @@ const DetailQuotes = () => {
               <p>Khách hàng: {order?.customer?.name}</p>
               <p>Điểm đi: {order?.departing}</p>
               <p>Điểm đến: {order?.arriving}</p>
+            </Card>
+          </Col>
+        ))}
+      </Row> */}
+
+      <Row gutter={16}>
+        {listQuotes.map((quote) => (
+          <Col span={8} key={quote._id}>
+            <Card
+              title={quote.quoteId || quote.orderId}
+              hoverable
+              onClick={() => handleCardClick(quote._id)}
+            >
+              <p>Khách hàng: {order?.customer?.name}</p>
+              <p>Điểm đi: {moment(quote.departureDate).format("DD/MM/YYYY")}</p>
+              <p>Điểm đến: {moment(quote.returnDate).format("DD/MM/YYYY")}</p>
+              <p>Tổng giá: {quote.totalPrice.toLocaleString()} VND</p>
             </Card>
           </Col>
         ))}
@@ -133,32 +189,32 @@ const DetailQuotes = () => {
         >
           <Descriptions bordered column={1}>
             <Descriptions.Item label="Tên khách hàng">
-              {data.customer.name}
+              {order.customer.name}
             </Descriptions.Item>
             <Descriptions.Item label="Số điện thoại">
-              {data.customer.phone}
+              {order.customer.phone}
             </Descriptions.Item>
             <Descriptions.Item label="Email">
-              {data.customer.email}
+              {order.customer.email}
             </Descriptions.Item>
             <Descriptions.Item label="Zalo">
-              {data.customer.zalo}
+              {order.customer.zalo}
             </Descriptions.Item>
             <Descriptions.Item label="Điểm đi">
-              {data.departing}
+              {order.departing}
             </Descriptions.Item>
             <Descriptions.Item label="Điểm đến">
-              {data.arriving}
+              {order.arriving}
             </Descriptions.Item>
             <Descriptions.Item label="Phương tiện">
-              {data.vehicles.map((v) => (
+              {selectedQuotation.vehicles?.map((v) => (
                 <p key={v.vehicleName}>
                   {v.vehicleName} - Số lượng: {v.quantity} - Ghế: {v.seats}
                 </p>
               ))}
             </Descriptions.Item>
             <Descriptions.Item label="Bữa ăn">
-              {data.meals.map((meal) => (
+              {selectedQuotation.meals?.map((meal) => (
                 <div key={meal.date}>
                   <p>
                     Ngày: {meal.date}
@@ -173,7 +229,7 @@ const DetailQuotes = () => {
               ))}
             </Descriptions.Item>
             <Descriptions.Item label="Dịch vụ">
-              {data.service.map((service) => (
+              {selectedQuotation.service?.map((service) => (
                 <p key={service.services}>
                   {service.services} - Giá: {service.prices.toLocaleString()}{" "}
                   {service.unit}

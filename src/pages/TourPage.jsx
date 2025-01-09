@@ -12,14 +12,15 @@ import React, { useState } from "react";
 import MealsInfo from "../components/mealsInfo";
 import ServicesInfo from "../components/servicesInfo";
 // import TourQuotation from "../components/tourSchedule";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import RoomAllocation from "../components/hotelInfo/RoomAllocation";
 import TourQuotation from "../components/tourSchedule/test";
-import VehicleInfo from "../components/vehicleInfo";
 import { quoteService } from "../services/quoteService";
-import { useNavigate } from "react-router-dom";
+import VehicleInfo from "../components/VehicleInfo";
 
 export default function TourPage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const steps = [
     {
       title: "Di chuyển",
@@ -47,7 +48,27 @@ export default function TourPage() {
   const { token } = theme.useToken();
   const [current, setCurrent] = useState(0);
 
-  const order = JSON.parse(localStorage.getItem("orderInfo"));
+  // const order = JSON.parse(localStorage.getItem("orderInfo"));
+  const { orderId } = useParams();
+
+  const data = useSelector((state) => state.orderData.orders); // Get orders from Redux store
+
+  // Function to get vehicleId based on orderId
+  const getVehicleId = (orderId) => {
+    // Find the order with the matching orderId
+    const order = data.find((item) => item.orderId === orderId);
+
+    // If an order is found, return the vehicleId
+    if (order) {
+      return order;
+    } else {
+      console.log("Order not found!");
+      return null;
+    }
+  };
+
+  const order = getVehicleId(orderId);
+
   const details = JSON.parse(localStorage.getItem("tourInfo"));
 
   const totalServiceCost = details.service?.reduce(
@@ -76,13 +97,15 @@ export default function TourPage() {
   const totalCost = totalServiceCost + totalMealCost + accomCost + vehicleCost;
 
   const mergedData = {
-    quoteId: order?.orderId,
+    quoteId: `${order?.orderId}-Q${Math.floor(Math.random() * 1000)}`, // Append Q and a random number
     orderId: order?.orderId,
     totalPrice: totalCost,
     departureDate: details?.date[0],
     returnDate: details?.date[1],
     ...details,
   };
+
+  console.log("Final data:", mergedData);
 
   const next = () => {
     setCurrent(current + 1);
@@ -96,10 +119,10 @@ export default function TourPage() {
   };
 
   const handleSubmit = async () => {
-    await quoteService.create(mergedData)
+    await quoteService.create(mergedData);
     console.log("Collected Data:", mergedData);
     message.success("Tour information submitted successfully!");
-    navigate(`/quote/detail/${mergedData?.orderId}`)
+    navigate(`/quote/detail/${mergedData?.orderId}`);
   };
 
   const items = steps.map((item) => ({

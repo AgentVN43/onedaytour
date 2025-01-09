@@ -15,7 +15,10 @@ export default function OrderList() {
   const dispatch = useDispatch();
 
   // Get data from Redux store
-  const orders = useSelector((state) => state.order.orders);
+  const orders = useSelector((state) => state.orderData.orders);
+
+
+  console.log("redux order",orders)
   // Fetch all orders on component mount
   useEffect(() => {
     dispatch(fetchOrders());

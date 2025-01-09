@@ -1,23 +1,38 @@
 import { Card, Col, Divider, Row, Table, Typography } from "antd";
 import dayjs from "dayjs";
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchOrders } from "../../Redux/Action/actOrder";
+import React from "react";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 const TourQuotation = () => {
   const { Text, Title } = Typography;
-  const order = JSON.parse(localStorage.getItem("orderInfo"));
+  // const order = JSON.parse(localStorage.getItem("orderInfo"));
   const details = JSON.parse(localStorage.getItem("tourInfo"));
+  const { orderId } = useParams();
+
   const totalServiceCost = details.service?.reduce(
     (total, service) => total + service.prices * (service.quantity || 1),
     0
   );
-  const dispatch = useDispatch();
-  const orders = useSelector((state) => state.order.orders);
 
-  useEffect(() => {
-    dispatch(fetchOrders());
-  }, [dispatch]);
+  const data = useSelector((state) => state.orderData.orders); // Get orders from Redux store
+
+  // Function to get vehicleId based on orderId
+  const getVehicleId = (orderId) => {
+    // Find the order with the matching orderId
+    const order = data.find((item) => item.orderId === orderId);
+
+    // If an order is found, return the vehicleId
+    if (order) {
+      return order;
+    } else {
+      console.log("Order not found!");
+      return null;
+    }
+  };
+
+  const order = getVehicleId(orderId);
+
 
   const accomCost = details.accommodation?.provisional;
   const vehicleCost = details.vehicles?.reduce(

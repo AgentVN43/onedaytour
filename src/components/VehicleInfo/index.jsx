@@ -8,6 +8,8 @@ import {
   Typography,
 } from "antd";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import { vehicleService } from "../../services/vehicleService";
 
 const { Title, Text } = Typography;
@@ -17,6 +19,34 @@ export default function VehicleInfo() {
   const [vehicle, setVehicle] = useState([]);
   const [result, setResult] = useState(null);
   const [tableData, setTableData] = useState([]);
+  const data = useSelector((state) => state.orderData.orders); // Get orders from Redux store
+
+  // const dispatch = useDispatch();
+  const { orderId } = useParams();
+
+  console.log(orderId)
+
+  // Function to get vehicleId based on orderId
+  const getVehicleId = (orderId) => {
+    // Find the order with the matching orderId
+    const order = data.find((item) => item.orderId === orderId);
+
+    // If an order is found, return the vehicleId
+    if (order) {
+      return order.vehicleId;
+    } else {
+      console.log("Order not found!");
+      return null;
+    }
+  };
+
+  const vehicleId = getVehicleId(orderId);
+  console.log(vehicleId); // Output the corresponding vehicleId
+
+  // const vehicleId = getVehicleId(orderid);
+  // console.log(vehicleId); // Output the corresponding vehicleId
+
+  // console.log(vehicleID);
 
   const tourInfo = JSON.parse(localStorage.getItem("tourInfo"));
   const calculateTotal = () => {
@@ -27,11 +57,9 @@ export default function VehicleInfo() {
     return total;
   };
 
-  const vehicleID = JSON.parse(localStorage.getItem("orderInfo")).vehicleId;
-
-  const GetAllVehicle = async (id) => {
+  const GetAllVehicle = async (vehicleId) => {
     try {
-      const res = await vehicleService.getByTypeId(id);
+      const res = await vehicleService.getByTypeId(vehicleId);
       if (res && res.data) {
         setVehicle(res.data);
       } else {
@@ -44,8 +72,8 @@ export default function VehicleInfo() {
   };
 
   useEffect(() => {
-    GetAllVehicle(vehicleID);
-  }, [vehicleID]);
+    GetAllVehicle(vehicleId);
+  }, [vehicleId]);
 
   useEffect(() => {
     calculateTotal();

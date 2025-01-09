@@ -1,7 +1,7 @@
 import api from './api';
 
 export const quoteService = {
-  getAll: () => api.get('/quotes'),
+  getAll: () => api.get('/quotess'),
   getById: (id) => api.get(`/quotess/${id}`),
   getByOrderId: (id) => api.get(`/quotess/orderId/${id}`),
   create: (data) => api.post('/quotess', data),

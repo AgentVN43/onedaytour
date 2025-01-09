@@ -3,7 +3,7 @@ import { thunk } from "redux-thunk";
 import { orderReducer } from "./Redux/Reducer/rdcOrder";
 
 const rootReducer = combineReducers({
-  order: orderReducer,
+  orderData: orderReducer,
 });
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));
