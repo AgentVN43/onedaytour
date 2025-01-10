@@ -70,7 +70,6 @@ export default function TourPage() {
   const order = getVehicleId(orderId);
 
   const details = JSON.parse(localStorage.getItem("tourInfo"));
-
   const totalServiceCost = details.service?.reduce(
     (total, service) => total + service.prices * (service.quantity || 1),
     0

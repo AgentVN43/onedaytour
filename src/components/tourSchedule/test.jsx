@@ -10,7 +10,7 @@ const TourQuotation = () => {
   const details = JSON.parse(localStorage.getItem("tourInfo"));
   const { orderId } = useParams();
 
-  const totalServiceCost = details.service?.reduce(
+  const totalServiceCost = details.services?.reduce(
     (total, service) => total + service.prices * (service.quantity || 1),
     0
   );
@@ -144,8 +144,8 @@ const TourQuotation = () => {
     },
     {
       title: "Đơn giá",
-      dataIndex: "price",
-      key: "price",
+      dataIndex: "prices",
+      key: "prices",
     },
     {
       title: "Số lượng xe",
@@ -157,7 +157,7 @@ const TourQuotation = () => {
       dataIndex: "total",
       key: "total",
       render: (_, record) =>
-        `${(record.price * record.quantity).toLocaleString()} VND`,
+        `${(record.prices * record.quantity).toLocaleString()} VND`,
     },
   ];
   const accommodationColumns = [
@@ -278,7 +278,7 @@ const TourQuotation = () => {
 
       <Typography.Title level={4}>Chi tiết dịch vụ</Typography.Title>
       <Table
-        dataSource={details.service}
+        dataSource={details.services}
         columns={serviceColumns}
         rowKey="_id"
         pagination={false}
