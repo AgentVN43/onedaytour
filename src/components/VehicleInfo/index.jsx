@@ -25,30 +25,10 @@ export default function VehicleInfo() {
   // const dispatch = useDispatch();
   const { orderId } = useParams();
 
-  // Function to get vehicleId based on orderId
-  const getVehicleId = (orderId) => {
-    // Find the order with the matching orderId
-    const order = data.find((item) => item.orderId === orderId);
-
-    // If an order is found, return the vehicleId
-    if (order) {
-      return order.vehicleId;
-    } else {
-      console.log("Order not found!");
-      return null;
-    }
-  };
-
-  const calculateTotal = () => {
-    return (
-      parseInt(tourInfo?.passengers?.adults || 0) +
-      parseInt(tourInfo?.passengers?.childrenUnder11 || 0)
-    );
-  };
-
-  const GetAllVehicle = async (vehicleId) => {
+  const GetAllVehicle = async () => {
     try {
-      const res = await vehicleService.getByTypeId(vehicleId);
+      const order = data.find((item) => item.orderId === orderId);
+      const res = await vehicleService.getByTypeId(order?.vehicleId);
       if (res && res.data) {
         setVehicle(res.data.sort((a, b) => b.seat - a.seat));
       } else {
@@ -61,7 +41,8 @@ export default function VehicleInfo() {
   };
 
   const findOptimalCombination = () => {
-    const passengerCount = parseInt(calculateTotal());
+    const passengerCount = parseInt(tourInfo?.passengers?.adults || 0) +
+      parseInt(tourInfo?.passengers?.childrenUnder11 || 0)
     if (isNaN(passengerCount) || passengerCount <= 0) {
       return { error: "Please enter a valid number of passengers" };
     }
@@ -129,7 +110,7 @@ export default function VehicleInfo() {
 
   useEffect(() => {
     if (orderId) {
-      GetAllVehicle(getVehicleId(orderId));
+      GetAllVehicle();
     }
   }, [orderId]);
 
