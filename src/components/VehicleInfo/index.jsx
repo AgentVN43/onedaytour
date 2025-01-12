@@ -4,6 +4,7 @@ import {
   Card,
   Input,
   InputNumber,
+  message,
   Table,
   Typography,
 } from "antd";
@@ -15,16 +16,14 @@ import { vehicleService } from "../../services/vehicleService";
 const { Title, Text } = Typography;
 
 export default function VehicleInfo() {
-  const [passengers, setPassengers] = useState("");
   const [vehicle, setVehicle] = useState([]);
   const [result, setResult] = useState(null);
-  const [tableData, setTableData] = useState([]);
+
+  const tourInfo = JSON.parse(localStorage.getItem("tourInfo"));
   const data = useSelector((state) => state.orderData.orders); // Get orders from Redux store
 
   // const dispatch = useDispatch();
   const { orderId } = useParams();
-
-  console.log(orderId)
 
   // Function to get vehicleId based on orderId
   const getVehicleId = (orderId) => {
@@ -40,28 +39,18 @@ export default function VehicleInfo() {
     }
   };
 
-  const vehicleId = getVehicleId(orderId);
-  console.log(vehicleId); // Output the corresponding vehicleId
-
-  // const vehicleId = getVehicleId(orderid);
-  // console.log(vehicleId); // Output the corresponding vehicleId
-
-  // console.log(vehicleID);
-
-  const tourInfo = JSON.parse(localStorage.getItem("tourInfo"));
   const calculateTotal = () => {
-    const total =
-      parseInt(tourInfo?.passengers?.adults) +
-      parseInt(tourInfo?.passengers?.childrenUnder11);
-    setPassengers(total || tourInfo?.passengers);
-    return total;
+    return (
+      parseInt(tourInfo?.passengers?.adults || 0) +
+      parseInt(tourInfo?.passengers?.childrenUnder11 || 0)
+    );
   };
 
   const GetAllVehicle = async (vehicleId) => {
     try {
       const res = await vehicleService.getByTypeId(vehicleId);
       if (res && res.data) {
-        setVehicle(res.data);
+        setVehicle(res.data.sort((a, b) => b.seat - a.seat));
       } else {
         console.warn("No data found for the provided vehicle type ID.");
       }
@@ -71,24 +60,14 @@ export default function VehicleInfo() {
     }
   };
 
-  useEffect(() => {
-    GetAllVehicle(vehicleId);
-  }, [vehicleId]);
-
-  useEffect(() => {
-    calculateTotal();
-  }, []);
-
-  const sortedVehicles = [...vehicle].sort((a, b) => b.seat - a.seat);
-
-  const findOptimalCombination = (totalPassengers) => {
-    const passengerCount = parseInt(totalPassengers);
+  const findOptimalCombination = () => {
+    const passengerCount = parseInt(calculateTotal());
     if (isNaN(passengerCount) || passengerCount <= 0) {
       return { error: "Please enter a valid number of passengers" };
     }
 
     let remainingPassengers = passengerCount;
-    const vehicleDistribution = sortedVehicles.map((vehicle) => ({
+    const vehicleDistribution = vehicle.map((vehicle) => ({
       ...vehicle,
       count: 0,
       totalSeats: 0,
@@ -132,31 +111,32 @@ export default function VehicleInfo() {
     );
     const utilizationRate = ((passengerCount / totalCapacity) * 100).toFixed(1);
 
-    if (remainingPassengers > 0) {
-      return {
-        error:
-          "Cannot accommodate this many passengers with available vehicles",
-      };
-    }
+    // if (remainingPassengers > 0) {
+    //   return {
+    //     error:
+    //       "Cannot accommodate this many passengers with available vehicles",
+    //   };
+    // }
 
-    return {
+    setResult({
       distribution: vehicleDistribution,
       totalVehicles,
       totalCapacity,
       passengers: passengerCount,
       utilizationRate,
-    };
+    });
   };
 
-  const handleCalculate = () => {
-    const result = findOptimalCombination(passengers);
-    setResult(result);
-    if (result && !result.error) {
-      setTableData(result.distribution.filter((v) => v.count > 0)); // Populate table data
+  useEffect(() => {
+    if (orderId) {
+      GetAllVehicle(getVehicleId(orderId));
     }
-  };
+  }, [orderId]);
 
-  console.log(result);
+  useEffect(() => {
+    findOptimalCombination()
+  }, [vehicle])
+
 
   const handleModalConfirm = () => {
     if (result && !result.error) {
@@ -172,7 +152,7 @@ export default function VehicleInfo() {
         totalVehicles: result.totalVehicles,
         totalCapacity: result.totalCapacity,
         utilizationRate: result.utilizationRate,
-        vehicles: tableData.map((vehicle) => ({
+        vehicles: result.distribution.map((vehicle) => ({
           vehicleId: vehicle._id,
           vehicleName: vehicle.name,
           quantity: vehicle.count,
@@ -184,16 +164,16 @@ export default function VehicleInfo() {
       };
 
       localStorage.setItem("tourInfo", JSON.stringify(confirmedData));
-
+      message.success("confirm success");
       console.log("Vehicle confirm:", confirmedData);
     }
   };
 
   const handleInputChange = (value, record) => {
-    const updatedTableData = tableData.map((item) =>
+    const updatedTableData = result.distribution.map((item) =>
       item._id === record._id ? { ...item, priceNew: value } : item
     );
-    setTableData(updatedTableData);
+    setResult({ ...result, distribution: updatedTableData });
   };
 
   const columns = [
@@ -257,16 +237,16 @@ export default function VehicleInfo() {
         Chọn phương tiện
       </Title>
       <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
-        <InputNumber
+        {/* <InputNumber
           style={{ width: "100%" }}
           size="large"
-          value={passengers}
+          value={calculateTotal()}
           min={1}
           disabled
-        />
-        <Button type="primary" size="large" onClick={handleCalculate}>
+        /> */}
+        {/* <Button type="primary" size="large" onClick={handleCalculate}>
           Calculate
-        </Button>
+        </Button> */}
       </div>
       {result && !result.error && (
         <div style={{ marginTop: 24 }}>
@@ -279,22 +259,22 @@ export default function VehicleInfo() {
                 gap: 16,
               }}
             >
-              <Text strong>Total Vehicles: {result.totalVehicles}</Text>
-              <Text strong>Total Capacity: {result.totalCapacity} seats</Text>
-              <Text strong>Passengers: {result.passengers}</Text>
-              <Text strong>Utilization: {result.utilizationRate}%</Text>
+              <Text strong>Tổng xe: {result.totalVehicles}</Text>
+              <Text strong>Tổng số ghế: {result.totalCapacity} seats</Text>
+              <Text strong>Số lượng hành khách: {result.passengers}</Text>
+              <Text strong>Sử dụng: {result.utilizationRate}%</Text>
             </div>
           </Card>
 
           <Table
-            dataSource={tableData}
+            dataSource={result.distribution}
             columns={columns}
             pagination={false}
             rowKey="_id"
           />
           <div style={{ marginTop: 24, textAlign: "right" }}>
             <Button type="primary" onClick={handleModalConfirm} size="large">
-              Confirm Selection
+              Xác nhận thông tin
             </Button>
           </div>
         </div>

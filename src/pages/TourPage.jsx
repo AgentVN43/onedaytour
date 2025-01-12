@@ -104,8 +104,6 @@ export default function TourPage() {
     ...details,
   };
 
-  console.log("Final data:", mergedData);
-
   const next = () => {
     setCurrent(current + 1);
   };
