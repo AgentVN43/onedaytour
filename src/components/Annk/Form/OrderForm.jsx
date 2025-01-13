@@ -5,6 +5,7 @@ import { provincesService } from "../../../services/provincesService";
 import { vehicleTypeService } from "../../../services/vehicleTypeService";
 import { generateTourId } from "../../../utils/generateTourId";
 import VehicleOption from "../../vehicleOption";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -15,7 +16,7 @@ const OrderForm = ({ info }) => {
   const [provinces, setProvinces] = useState([]);
   const [vehicleType, setVehicleType] = useState([]);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
-
+  const nav = useNavigate()
   const GetAllProvince = async () => {
     try {
       const res = await provincesService.getAll();
@@ -72,6 +73,7 @@ const OrderForm = ({ info }) => {
     };
     await orderService.create(newOrder);
     message.success("Đơn hàng đã được thêm!");
+    nav("/quotes")
     form.resetFields();
   };
 
@@ -181,7 +183,7 @@ const OrderForm = ({ info }) => {
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" className="w-full">
-            Xác nhận thông tin
+            Tạo đơn hàng
           </Button>
         </Form.Item>
       </Form>

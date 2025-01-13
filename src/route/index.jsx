@@ -25,7 +25,7 @@ export default function MainRoute() {
         <Route path="/quote/:orderId" element={<QuotationForm />} />
         <Route path="/quote/detail/:orderId" element={<DetailQuotes />} />
         <Route path="/add-order/" element={<OrderForm />} />
-        <Route path="/compare-quotes" element={<CompareQuotes />} />
+        <Route path="/compare/:orderId" element={<CompareQuotes />} />
       </Routes>
     </>
   );
