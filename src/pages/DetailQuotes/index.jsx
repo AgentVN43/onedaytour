@@ -1,12 +1,12 @@
+import { BackwardOutlined, CalculatorOutlined } from "@ant-design/icons";
+import { Button, Card, Col, Descriptions, Modal, Row } from "antd";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
-import { Card, Modal, Row, Col, Descriptions, Button } from "antd";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import InfoTour from "../../components/Annk/Form/InfoTour";
 import { orderService } from "../../services/orderService";
 import { quoteService } from "../../services/quoteService";
-import { useNavigate, useParams } from "react-router-dom";
-import { CalculatorOutlined } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchOrders } from "../../Redux/Action/actOrder";
-import moment from "moment";
 
 // const datas = {
 //   customer: {
@@ -64,8 +64,11 @@ const DetailQuotes = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
   const [listQuotes, setListQuotes] = useState([]);
+  const [message, setMessage] = useState(null);
+
   const dataOrders = useSelector((state) => state.orderData.orders); // Get orders from Redux store
 
+  // Get orders from Redux store
   const getOrderData = (orderId) => {
     if (!dataOrders || dataOrders.length === 0) {
       console.log("Data orders are empty or not loaded!");
@@ -81,12 +84,30 @@ const DetailQuotes = () => {
     }
   };
 
+  // const getListQuotes = async (orderId) => {
+  //   try {
+  //     const data = await quoteService.getByOrderId(orderId);
+  //     setListQuotes(data.data.data);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
+
   const getListQuotes = async (orderId) => {
     try {
       const data = await quoteService.getByOrderId(orderId);
-      setListQuotes(data.data.data);
+      if (data.data.data.length === 0) {
+        // If no quotes exist, display a message
+        setListQuotes([]);
+        setMessage("Chưa có báo giá, hãy tạo báo giá nhé");
+      } else {
+        // If quotes exist, update the list and clear any previous message
+        setListQuotes(data.data.data);
+        setMessage(null);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
+      setMessage("An error occurred while fetching quotes.");
     }
   };
 
@@ -123,16 +144,16 @@ const DetailQuotes = () => {
     setSelectedQuotation(null);
   };
 
-  useEffect(() => {
-    const orderData = getOrderData(orderId);
-    if (orderData) {
-      setData(orderData);
-    }
-  }, [orderId, dataOrders]); // Dependencies ensure this runs only when orderId or dataOrders changes
+  // useEffect(() => {
+  //   const orderData = getOrderData(orderId);
+  //   if (orderData) {
+  //     setData(orderData);
+  //   }
+  // }, [orderId, dataOrders]); // Dependencies ensure this runs only when orderId or dataOrders changes
 
-  console.log(listQuotes);
+  // console.log(listQuotes);
 
-  console.log(selectedQuotation)
+  // console.log(selectedQuotation)
 
   useEffect(() => {
     getById(orderId);
@@ -141,8 +162,16 @@ const DetailQuotes = () => {
   return (
     <>
       <div className="flex justify-between">
+        <Button onClick={() => navigate("/quotes")}>
+          <BackwardOutlined /> Trở về
+        </Button>
         <h2 className="text-2xl font-bold mb-4">Chi tiết đơn hàng</h2>
-        <Button onClick={() => navigate("/compare-quotes")}>
+        <Button
+          onClick={() => {
+            console.log("Navigating with orderId:", orderId);
+            navigate(`/compare/${orderId}`);
+          }}
+        >
           <CalculatorOutlined /> So sánh
         </Button>
       </div>
@@ -162,7 +191,7 @@ const DetailQuotes = () => {
         ))}
       </Row> */}
 
-      <Row gutter={16}>
+      {/* <Row gutter={16}>
         {listQuotes.map((quote) => (
           <Col span={8} key={quote._id}>
             <Card
@@ -177,6 +206,38 @@ const DetailQuotes = () => {
             </Card>
           </Col>
         ))}
+      </Row> */}
+
+      <Row gutter={16}>
+        {listQuotes.length > 0 ? (
+          listQuotes.map((quote) => (
+            <>
+              <Col span={8} key={quote._id}>
+                <Card
+                  title={quote.quoteId || quote.orderId}
+                  hoverable
+                  onClick={() => handleCardClick(quote._id)}
+                >
+                  <p>Khách hàng: {order?.customer?.name}</p>
+                  <p>
+                    Điểm đi: {moment(quote.departureDate).format("DD/MM/YYYY")}
+                  </p>
+                  <p>
+                    Điểm đến: {moment(quote.returnDate).format("DD/MM/YYYY")}
+                  </p>
+                  <p>Tổng giá: {quote.totalPrice.toLocaleString()} VND</p>
+                </Card>
+              </Col>
+            </>
+          ))
+        ) : (
+          <Col span={24} style={{ textAlign: "center", marginTop: "20px" }}>
+            <p>{message}</p>
+            <Button onClick={() => navigate("/quotes")}>
+              <BackwardOutlined /> Tạo đơn hàng
+            </Button>
+          </Col>
+        )}
       </Row>
 
       {selectedQuotation && (
