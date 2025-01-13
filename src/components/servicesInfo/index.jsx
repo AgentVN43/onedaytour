@@ -34,6 +34,8 @@ export default function ServicesInfo() {
     }
   };
 
+  console.log(services)
+
   // Handle Collapse change
   const handleCollapseChange = (activeKey) => {
     setActiveCategoryId(activeKey[0]); // Update active category ID
@@ -64,6 +66,8 @@ export default function ServicesInfo() {
   useEffect(() => {
     getAllCategory()
   }, [])
+
+  console.log(categorys)
   return (
     <>
       <Card style={{ width: "100%", margin: "0 auto" }}>
@@ -84,7 +88,7 @@ export default function ServicesInfo() {
                           checked={selectedServices.some(selectedService => selectedService._id === service._id)}
                           onChange={() => handleCheckboxChange(service)}
                         >
-                          {service.services}
+                          {service.servicesName}
                         </Checkbox>
                       ))}
                   </div>

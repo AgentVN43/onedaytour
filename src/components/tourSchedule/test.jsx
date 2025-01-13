@@ -33,6 +33,7 @@ const TourQuotation = () => {
 
   const order = getVehicleId(orderId);
 
+  console.log(details)
 
   const accomCost = details.accommodation?.provisional;
   const vehicleCost = details.vehicles?.reduce(
@@ -56,8 +57,8 @@ const TourQuotation = () => {
   const serviceColumns = [
     {
       title: "Dịch vụ",
-      dataIndex: "services",
-      key: "services",
+      dataIndex: "servicesName",
+      key: "servicesName",
     },
     {
       title: "Đơn giá",

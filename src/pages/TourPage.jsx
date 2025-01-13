@@ -1,5 +1,5 @@
 import { Button, message, Steps, theme } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // import { provincesService } from "../services/provincesService";
 // import BreadcrumbC from "../components/Breadcrumb";
@@ -52,7 +52,9 @@ export default function TourPage() {
   const { orderId } = useParams();
 
   const data = useSelector((state) => state.orderData.orders); // Get orders from Redux store
-
+  const [totalCost, setTotalCost] = useState(0);
+  const [mergedData, setMergedData] = useState({});
+  const [details, setDetails] = useState("");
   // Function to get vehicleId based on orderId
   const getVehicleId = (orderId) => {
     // Find the order with the matching orderId
@@ -68,8 +70,13 @@ export default function TourPage() {
   };
 
   const order = getVehicleId(orderId);
-
-  const details = JSON.parse(localStorage.getItem("tourInfo"));
+  useEffect(() => {
+    const details = localStorage.getItem("tourInfo");
+    if (details) {
+      setDetails(JSON.parse(details));
+    }
+  }, []);
+  // const details = JSON.parse(localStorage.getItem("tourInfo"));
   const totalServiceCost = details.service?.reduce(
     (total, service) => total + service.prices * (service.quantity || 1),
     0
@@ -93,16 +100,42 @@ export default function TourPage() {
     0
   );
 
-  const totalCost = totalServiceCost + totalMealCost + accomCost + vehicleCost;
+  // useEffect(() => {
+  //   const totalCost =
+  //     totalServiceCost + totalMealCost + accomCost + vehicleCost;
+  // },[]);
 
-  const mergedData = {
-    quoteId: `${order?.orderId}-Q${Math.floor(Math.random() * 1000)}`, // Append Q and a random number
-    orderId: order?.orderId,
-    totalPrice: totalCost,
-    departureDate: details?.date[0],
-    returnDate: details?.date[1],
-    ...details,
-  };
+  // const mergedData = {
+  //   quoteId: `${order?.orderId}-Q${Math.floor(Math.random() * 1000)}`, // Append Q and a random number
+  //   orderId: order?.orderId,
+  //   totalPrice: totalCost,
+  //   departureDate: details?.date[0],
+  //   returnDate: details?.date[1],
+  //   ...details,
+  // };
+
+  useEffect(() => {
+    // Calculate total cost when dependencies change
+    const calculatedTotalCost =
+      (totalServiceCost || 0) +
+      (totalMealCost || 0) +
+      (accomCost || 0) +
+      (vehicleCost || 0);
+
+    setTotalCost(calculatedTotalCost);
+
+    // Update mergedData based on the calculated totalCost and other dependencies
+    if (order?.orderId && details) {
+      setMergedData({
+        ...details,
+        quoteId: `${order?.orderId}-Q${Math.floor(Math.random() * 1000)}`, // Append Q and a random number
+        orderId: order?.orderId,
+        totalPrice: calculatedTotalCost,
+        departureDate: details?.date[0],
+        returnDate: details?.date[1],
+      });
+    }
+  }, []);
 
   const next = () => {
     setCurrent(current + 1);
@@ -116,8 +149,9 @@ export default function TourPage() {
   };
 
   const handleSubmit = async () => {
-    await quoteService.create(mergedData);
     console.log("Collected Data:", mergedData);
+
+    await quoteService.create(mergedData);
     message.success("Tour information submitted successfully!");
     navigate(`/quote/detail/${mergedData?.orderId}`);
   };
