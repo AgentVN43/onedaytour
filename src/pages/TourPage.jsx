@@ -81,6 +81,7 @@ export default function TourPage() {
     (total, service) => total + service.prices * (service.quantity || 1),
     0
   );
+  console.log("🚀 ~ TourPage ~ totalServiceCost:", totalServiceCost)
 
   const totalMealCost = details.meals?.reduce((total, meal) => {
     return (
@@ -100,16 +101,42 @@ export default function TourPage() {
     0
   );
 
-  const totalCost = totalServiceCost + totalMealCost + accomCost + vehicleCost;
+  // useEffect(() => {
+  //   const totalCost =
+  //     totalServiceCost + totalMealCost + accomCost + vehicleCost;
+  // },[]);
 
-  const mergedData = {
-    quoteId: `${order?.orderId}-Q${Math.floor(Math.random() * 1000)}`, // Append Q and a random number
-    orderId: order?.orderId,
-    totalPrice: totalCost,
-    departureDate: details?.date[0],
-    returnDate: details?.date[1],
-    ...details,
-  };
+  // const mergedData = {
+  //   quoteId: `${order?.orderId}-Q${Math.floor(Math.random() * 1000)}`, // Append Q and a random number
+  //   orderId: order?.orderId,
+  //   totalPrice: totalCost,
+  //   departureDate: details?.date[0],
+  //   returnDate: details?.date[1],
+  //   ...details,
+  // };
+
+  useEffect(() => {
+    // Calculate total cost when dependencies change
+    const calculatedTotalCost =
+      (totalServiceCost || 0) +
+      (totalMealCost || 0) +
+      (accomCost || 0) +
+      (vehicleCost || 0);
+
+    setTotalCost(calculatedTotalCost);
+
+    // Update mergedData based on the calculated totalCost and other dependencies
+    if (order?.orderId && details) {
+      setMergedData({
+        ...details,
+        quoteId: `${order?.orderId}-Q${Math.floor(Math.random() * 1000)}`, // Append Q and a random number
+        orderId: order?.orderId,
+        totalPrice: calculatedTotalCost,
+        departureDate: details?.date[0],
+        returnDate: details?.date[1],
+      });
+    }
+  }, []);
 
   const next = () => {
     setCurrent(current + 1);
