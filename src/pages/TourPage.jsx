@@ -81,6 +81,7 @@ export default function TourPage() {
     (total, service) => total + service.prices * (service.quantity || 1),
     0
   );
+  console.log("🚀 ~ TourPage ~ totalServiceCost:", totalServiceCost)
 
   const totalMealCost = details.meals?.reduce((total, meal) => {
     return (
@@ -150,7 +151,6 @@ export default function TourPage() {
 
   const handleSubmit = async () => {
     console.log("Collected Data:", mergedData);
-
     await quoteService.create(mergedData);
     message.success("Tour information submitted successfully!");
     navigate(`/quote/detail/${mergedData?.orderId}`);
