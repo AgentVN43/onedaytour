@@ -1,5 +1,5 @@
 import { Button, message, Steps, theme } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // import { provincesService } from "../services/provincesService";
 // import BreadcrumbC from "../components/Breadcrumb";
@@ -52,7 +52,9 @@ export default function TourPage() {
   const { orderId } = useParams();
 
   const data = useSelector((state) => state.orderData.orders); // Get orders from Redux store
-
+  const [totalCost, setTotalCost] = useState(0);
+  const [mergedData, setMergedData] = useState({});
+  const [details, setDetails] = useState("");
   // Function to get vehicleId based on orderId
   const getVehicleId = (orderId) => {
     // Find the order with the matching orderId
@@ -68,9 +70,14 @@ export default function TourPage() {
   };
 
   const order = getVehicleId(orderId);
-
-  const details = JSON.parse(localStorage.getItem("tourInfo"));
-  const totalServiceCost = details.services?.reduce(
+  useEffect(() => {
+    const details = localStorage.getItem("tourInfo");
+    if (details) {
+      setDetails(JSON.parse(details));
+    }
+  }, []);
+  // const details = JSON.parse(localStorage.getItem("tourInfo"));
+  const totalServiceCost = details.service?.reduce(
     (total, service) => total + service.prices * (service.quantity || 1),
     0
   );

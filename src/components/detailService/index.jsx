@@ -36,8 +36,8 @@ const DetailService = ({ services, setServices }) => {
     const columns = [
         {
             title: 'Tên dịch vụ',
-            dataIndex: 'services',
-            key: 'services',
+            dataIndex: 'servicesName',
+            key: 'servicesName',
         },
         {
             title: 'Đơn giá',
