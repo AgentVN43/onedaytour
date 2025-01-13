@@ -7,7 +7,7 @@ import MealManagement from "../pages/Meal";
 import GuideServiceManagement from "../pages/GuideService";
 import Province from "../pages/Province";
 import OrderForm from "../components/Annk/Form/OrderForm";
-import Quotes from "../pages/Quotes";
+import Orders from "../pages/Orders";
 import DetailQuotes from "../pages/DetailQuotes";
 import CompareQuotes from "../pages/CompareQuotes";
 
@@ -21,7 +21,7 @@ export default function MainRoute() {
         <Route path="/food-packages" element={<MealManagement />} />
         <Route path="/guides" element={<GuideServiceManagement />} />
         <Route path="/locations" element={<Province />} />
-        <Route path="/quotes" element={<Quotes />} />
+        <Route path="/orders" element={<Orders />} />
         <Route path="/quote/:orderId" element={<QuotationForm />} />
         <Route path="/quote/detail/:orderId" element={<DetailQuotes />} />
         <Route path="/add-order/" element={<OrderForm />} />

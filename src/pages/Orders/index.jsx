@@ -1,12 +1,16 @@
+import { Layout } from "antd";
 import { Button, Form, message, Modal, Table } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import InfoTour from "../Form/InfoTour";
+import InfoTour from "../../components/Annk/Form/InfoTour"
 import { CarOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchOrders, fetchOrderById } from "../../../Redux/Action/actOrder";
+import { fetchOrders, fetchOrderById } from "../../Redux/Action/actOrder";
 
-export default function OrderList() {
+
+const { Content } = Layout;
+
+const Orders = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm(); // Form instance
   const [selectedOrderId, setSelectedOrderId] = useState(null);
@@ -17,8 +21,6 @@ export default function OrderList() {
   // Get data from Redux store
   const orders = useSelector((state) => state.orderData.orders);
 
-
-  console.log("redux order",orders)
   // Fetch all orders on component mount
   useEffect(() => {
     dispatch(fetchOrders());
@@ -34,7 +36,6 @@ export default function OrderList() {
     form
       .validateFields()
       .then((values) => {
-        console.log("Form Values:", values); // Handle form submission
         localStorage.setItem("tourInfo", JSON.stringify(values));
         message.info(`Tạo báo giá cho đơn hàng: ${orderId}`);
         navigate(`/quote/${orderId}`);
@@ -110,34 +111,40 @@ export default function OrderList() {
   ];
 
   return (
-    <>
-      <div className="flex justify-between">
-        <h2 className="text-2xl font-bold mb-4">Danh Sách Đơn Hàng</h2>
-        <Button onClick={() => navigate("/add-order")}>
-          <CarOutlined /> Tạo đơn hàng
-        </Button>
-      </div>
-      <Table
-        dataSource={orders}
-        columns={columns}
-        rowKey="orderId"
-        pagination={{ pageSize: 5 }}
-        onRow={(record) => ({
-          onClick: () => navigate(`/quote/detail/${record.orderId}`),
-        })}
-      />
-      <Modal
-        open={isModalOpen}
-        onOk={() => handleOk(selectedOrderId)}
-        onCancel={handleCancel}
-        okText="Submit"
-        cancelText="Cancel"
-        width={"50%"}
-      >
-        <div className="relative -mx-6 -my-5">
-          <InfoTour form={form} />
-        </div>
-      </Modal>
-    </>
+    <Layout style={{ minHeight: "100vh" }}>
+      <Content style={{ padding: "24px" }}>
+        <>
+          <div className="flex justify-between">
+            <h2 className="text-2xl font-bold mb-4">Danh Sách Đơn Hàng</h2>
+            <Button onClick={() => navigate("/add-order")}>
+              <CarOutlined /> Tạo đơn hàng
+            </Button>
+          </div>
+          <Table
+            dataSource={orders}
+            columns={columns}
+            rowKey="orderId"
+            pagination={{ pageSize: 5 }}
+            onRow={(record) => ({
+              onClick: () => navigate(`/quote/detail/${record.orderId}`),
+            })}
+          />
+          <Modal
+            open={isModalOpen}
+            onOk={() => handleOk(selectedOrderId)}
+            onCancel={handleCancel}
+            okText="Submit"
+            cancelText="Cancel"
+            width={"50%"}
+          >
+            <div className="relative -mx-6 -my-5">
+              <InfoTour form={form} />
+            </div>
+          </Modal>
+        </>
+      </Content>
+    </Layout>
   );
-}
+};
+
+export default Orders;

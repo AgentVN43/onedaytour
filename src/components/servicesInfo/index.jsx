@@ -55,7 +55,7 @@ export default function ServicesInfo() {
   };
   const handleConfirm = () => {
     const infoTraveler = JSON.parse(localStorage.getItem("tourInfo"));
-    const confirmedData = { ...infoTraveler, service: selectedServices }
+    const confirmedData = { ...infoTraveler, services: selectedServices }
 
     localStorage.setItem("tourInfo", JSON.stringify(confirmedData));
     message.success("Service data saved successfully");
