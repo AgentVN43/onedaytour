@@ -15,7 +15,7 @@ import ServicesInfo from "../components/servicesInfo";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import RoomAllocation from "../components/hotelInfo/RoomAllocation";
-import TourQuotation from "../components/tourSchedule/test";
+import TourQuotation from "../components/tourSchedule";
 import { quoteService } from "../services/quoteService";
 import VehicleInfo from "../components/VehicleInfo";
 
@@ -74,7 +74,6 @@ export default function TourPage() {
     (total, service) => total + service.prices * (service.quantity || 1),
     0
   );
-  console.log("🚀 ~ TourPage ~ totalServiceCost:", totalServiceCost)
 
   const totalMealCost = details.meals?.reduce((total, meal) => {
     return (
@@ -95,7 +94,6 @@ export default function TourPage() {
   );
 
   const totalCost = totalServiceCost + totalMealCost + accomCost + vehicleCost;
-  console.log("🚀 ~ TourPage ~ totalCost:", totalCost)
 
   const mergedData = {
     quoteId: `${order?.orderId}-Q${Math.floor(Math.random() * 1000)}`, // Append Q and a random number

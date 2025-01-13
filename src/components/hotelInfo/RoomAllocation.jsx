@@ -118,8 +118,7 @@ const RoomAllocation = () => {
         error.response?.data || error.message
       );
       alert(
-        `Failed to load accom: ${
-          error.response?.data?.message || "Unknown error"
+        `Failed to load accom: ${error.response?.data?.message || "Unknown error"
         }`
       );
     }
@@ -127,7 +126,7 @@ const RoomAllocation = () => {
 
   const handleProvisional = useCallback(() => {
     if (allocation?.totalRooms && selectedPrice) {
-      const total = (allocation.totalRooms * selectedPrice)*numberOfNights;
+      const total = (allocation.totalRooms * selectedPrice) * numberOfNights;
       setProvisional(total);
     }
   }, [allocation, selectedPrice]);
@@ -231,6 +230,19 @@ const RoomAllocation = () => {
       }
       style={{ margin: "0 auto" }}
     >
+      <Row gutter={16} style={{ marginBottom: 16, height: 100 }} justify="center" align="middle">
+        <Col span={16}>
+          <Flex vertical gap="middle" style={{ justifyContent: "center", alignItems: "center", height: "100%" }}>
+            <Radio.Group onChange={onChange} value={selectedPrice}>
+              {accom.map((item, index) => (
+                <Radio key={index} value={item.prices}>
+                  {item.name}
+                </Radio>
+              ))}
+            </Radio.Group>
+          </Flex>
+        </Col>
+      </Row>
       <Row gutter={16} style={{ marginBottom: 16 }}>
         <Col xs={24} sm={12} md={6}>
           <Typography.Text strong>Check-in: </Typography.Text>
@@ -291,23 +303,7 @@ const RoomAllocation = () => {
         </Col>
       </Row>
 
-      <Row gutter={16} style={{ marginBottom: 16 }}>
-        <Col span={8}>
-          <Flex vertical gap="middle">
-            <Radio.Group onChange={onChange} value={selectedPrice}>
-              {accom.map((item, index) => {
-                return (
-                  <Radio key={index} value={item.prices}>
-                    {item.name}
-                  </Radio>
-                );
-              })}
-            </Radio.Group>
-          </Flex>
-        </Col>
-      </Row>
 
-      <Typography.Title level={4}>Kết quả phân bổ: Cần {allocation.totalRooms} phòng, giá {Number(selectedPrice).toLocaleString()}/đêm x {numberOfNights} đêm ~ {Number(provisional).toLocaleString()}</Typography.Title>
       <Row gutter={16}>
         <Col span={6}>
           <Card>
@@ -337,7 +333,7 @@ const RoomAllocation = () => {
           </Card>
         </Col>
       </Row>
-
+      <Typography.Title level={4}>Kết quả phân bổ: Cần {allocation.totalRooms} phòng, giá {Number(selectedPrice).toLocaleString()}/đêm x {numberOfNights} đêm ~ {Number(provisional).toLocaleString()}</Typography.Title>
       {/* {allocation.unallocatedGuests < 0 && (
         <Alert
           message="Error"

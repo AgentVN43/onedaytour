@@ -8,7 +8,7 @@ const items = [
   { key: '/food-packages', icon: <AppstoreOutlined />, label: <Link to="/food-packages">Gói ăn uống</Link> },
   { key: '/guides', icon: <UserOutlined />, label: <Link to="/guides">Hướng dẫn viên</Link> },
   { key: '/locations', icon: <GlobalOutlined />, label: <Link to="/locations">Tỉnh thành</Link> },
-  { key: '/orders', icon: <StrikethroughOutlined />, label: <Link to="/orders">Báo giá</Link> },
+  { key: '/orders', icon: <StrikethroughOutlined />, label: <Link to="/orders">Đơn hàng</Link> },
 ];
 const Menus = () => {
   const location = useLocation();

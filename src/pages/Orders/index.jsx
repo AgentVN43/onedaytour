@@ -126,7 +126,7 @@ const Orders = () => {
             rowKey="orderId"
             pagination={{ pageSize: 5 }}
             onRow={(record) => ({
-              onClick: () => navigate(`/quote/detail/${record.orderId}`),
+              onClick: () => navigate(`/order/detail/${record.orderId}`),
             })}
           />
           <Modal

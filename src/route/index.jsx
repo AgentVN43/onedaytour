@@ -8,8 +8,9 @@ import GuideServiceManagement from "../pages/GuideService";
 import Province from "../pages/Province";
 import OrderForm from "../components/Annk/Form/OrderForm";
 import Orders from "../pages/Orders";
-import DetailQuotes from "../pages/DetailQuotes";
+import DetailOrder from "../pages/DetailOrder";
 import CompareQuotes from "../pages/CompareQuotes";
+import DetailQuotes from "../pages/DetailQuote";
 
 export default function MainRoute() {
   return (
@@ -23,7 +24,8 @@ export default function MainRoute() {
         <Route path="/locations" element={<Province />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/quote/:orderId" element={<QuotationForm />} />
-        <Route path="/quote/detail/:orderId" element={<DetailQuotes />} />
+        <Route path="/order/detail/:orderId" element={<DetailOrder />} />
+        <Route path="/quote/detail/:quotesId" element={<DetailQuotes />} />
         <Route path="/add-order/" element={<OrderForm />} />
         <Route path="/compare/:orderId" element={<CompareQuotes />} />
       </Routes>

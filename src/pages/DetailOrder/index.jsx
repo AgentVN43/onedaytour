@@ -4,59 +4,11 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import InfoTour from "../../components/Annk/Form/InfoTour";
 import { orderService } from "../../services/orderService";
 import { quoteService } from "../../services/quoteService";
 
-// const datas = {
-//   customer: {
-//     name: "annk2",
-//     phone: "12312123",
-//     email: "a@gmail.com",
-//     zalo: "123123123",
-//   },
-//   orderId: "BGIBKA-00292990-990XE",
-//   departing: "Bắc Giang",
-//   arriving: "Bắc Kạn",
-//   vehicles: [
-//     {
-//       vehicleName: "Xe du lịch 45",
-//       quantity: 1,
-//       seats: 45,
-//     },
-//     {
-//       vehicleName: "Xe du lịch 29",
-//       quantity: 1,
-//       seats: 29,
-//     },
-//   ],
-//   meals: [
-//     {
-//       date: "27/12/2024",
-//       sessions: [
-//         { session: "Sáng", portionCount: 40 },
-//         { session: "Trưa", portionCount: 48 },
-//         { session: "Tối", portionCount: 48 },
-//       ],
-//     },
-//     {
-//       date: "28/12/2024",
-//       sessions: [
-//         { session: "Sáng", portionCount: 48 },
-//         { session: "Trưa", portionCount: 48 },
-//       ],
-//     },
-//   ],
-//   service: [
-//     { services: "HDV và điều hành", prices: 600000, unit: "Người" },
-//     { services: "Nước", prices: 5000, unit: "Chai", quantity: 48 },
-//   ],
-// };
-
-const DetailQuotes = () => {
+const DetailOrder = () => {
   const [visible, setVisible] = useState(false);
-  const [quotes, setQuotes] = useState([]);
-  console.log("🚀 ~ DetailQuotes ~ quotes:", quotes);
   const [order, setOrder] = useState([]);
   // console.log("🚀 ~ DetailQuotes ~ order:", order);
   const [selectedQuotation, setSelectedQuotation] = useState(null);
@@ -111,20 +63,10 @@ const DetailQuotes = () => {
     }
   };
 
-  const quotations = [
-    { id: 1, title: "Báo giá 1" },
-    { id: 2, title: "Báo giá 2" },
-    { id: 3, title: "Báo giá 3" },
-  ];
-
   const getById = async (orderId) => {
     const resOrder = await orderService.getById(orderId);
     if (resOrder && resOrder?.data) {
       setOrder(resOrder?.data);
-    }
-    const res = await quoteService.getByOrderId(orderId);
-    if (res && res?.data) {
-      setQuotes(res?.data);
     }
   };
 
@@ -135,6 +77,7 @@ const DetailQuotes = () => {
 
   const handleCardClick = (quoteId) => {
     const quote = listQuotes.find((item) => item._id === quoteId); // Find the selected quote
+    navigate(`/quote/detail/${quoteId}`)
     setSelectedQuotation(quote); // Set selected quote
     setVisible(true);
   };
@@ -144,17 +87,6 @@ const DetailQuotes = () => {
     setSelectedQuotation(null);
   };
 
-  // useEffect(() => {
-  //   const orderData = getOrderData(orderId);
-  //   if (orderData) {
-  //     setData(orderData);
-  //   }
-  // }, [orderId, dataOrders]); // Dependencies ensure this runs only when orderId or dataOrders changes
-
-  // console.log(listQuotes);
-
-  // console.log(selectedQuotation)
-
   useEffect(() => {
     getById(orderId);
     getListQuotes(orderId);
@@ -162,7 +94,7 @@ const DetailQuotes = () => {
   return (
     <>
       <div className="flex justify-between">
-        <Button onClick={() => navigate("/quotes")}>
+        <Button onClick={() => navigate("/orders")}>
           <BackwardOutlined /> Trở về
         </Button>
         <h2 className="text-2xl font-bold mb-4">Chi tiết đơn hàng</h2>
@@ -233,7 +165,7 @@ const DetailQuotes = () => {
         ) : (
           <Col span={24} style={{ textAlign: "center", marginTop: "20px" }}>
             <p>{message}</p>
-            <Button onClick={() => navigate("/quotes")}>
+            <Button onClick={() => navigate("/orders")}>
               <BackwardOutlined /> Tạo đơn hàng
             </Button>
           </Col>
@@ -304,4 +236,4 @@ const DetailQuotes = () => {
   );
 };
 
-export default DetailQuotes;
+export default DetailOrder;
