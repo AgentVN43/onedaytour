@@ -1,4 +1,4 @@
-import { Button, message, Steps, theme } from "antd";
+import { Button, message, Spin, Steps, theme } from "antd";
 import React, { useEffect, useState } from "react";
 
 // import { provincesService } from "../services/provincesService";
@@ -21,6 +21,8 @@ import VehicleInfo from "../components/VehicleInfo";
 
 export default function TourPage() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
   const steps = [
     {
       title: "Di chuyển",
@@ -116,6 +118,7 @@ export default function TourPage() {
 
   const handleSubmit = async () => {
     try {
+      setIsLoading(true);
       const tourInfo = JSON.parse(localStorage.getItem("tourInfo"));
       if (!tourInfo) {
         message.error("Tour information is missing in localStorage.");
@@ -146,6 +149,8 @@ export default function TourPage() {
     } catch (error) {
       console.error("Error submitting tour information:", error);
       message.error("An error occurred while submitting tour information.");
+    } finally {
+      setIsLoading(false); // Hide spinner
     }
   };
 
@@ -193,9 +198,11 @@ export default function TourPage() {
                   </Button>
                 )}
                 {current === steps.length - 1 && (
-                  <Button type="primary" onClick={() => handleSubmit()}>
-                    Done
-                  </Button>
+                  <Spin spinning={isLoading} tip="Submitting...">
+                    <Button type="primary" onClick={() => handleSubmit()}>
+                      Done
+                    </Button>
+                  </Spin>
                 )}
               </div>
             </div>

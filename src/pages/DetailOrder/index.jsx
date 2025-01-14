@@ -19,7 +19,7 @@ const DetailOrder = () => {
   const [message, setMessage] = useState(null);
 
   const dataOrders = useSelector((state) => state.orderData.orders); // Get orders from Redux store
-
+  console.log(dataOrders)
   // Get orders from Redux store
   const getOrderData = (orderId) => {
     if (!dataOrders || dataOrders.length === 0) {
@@ -75,9 +75,11 @@ const DetailOrder = () => {
   //   setVisible(true);
   // };
 
+  console.log("This is list quotes:", listQuotes)
+
   const handleCardClick = (quoteId) => {
-    const quote = listQuotes.find((item) => item._id === quoteId); // Find the selected quote
-    navigate(`/quote/detail/${quoteId}`)
+    const quote = listQuotes.find((item) => item.quoteId === quoteId); // Find the selected quote
+    navigate(`/quote/detail/${quoteId}`);
     setSelectedQuotation(quote); // Set selected quote
     setVisible(true);
   };
@@ -91,6 +93,7 @@ const DetailOrder = () => {
     getById(orderId);
     getListQuotes(orderId);
   }, []);
+
   return (
     <>
       <div className="flex justify-between">
@@ -148,15 +151,18 @@ const DetailOrder = () => {
                 <Card
                   title={quote.quoteId || quote.orderId}
                   hoverable
-                  onClick={() => handleCardClick(quote._id)}
+                  onClick={() => handleCardClick(quote.quoteId)}
                 >
                   <p>Khách hàng: {order?.customer?.name}</p>
+                  <p>Điểm đi: {order?.departing}</p>
+                  <p>Điểm đến: {order?.arriving}</p>
                   <p>
-                    Điểm đi: {moment(quote.departureDate).format("DD/MM/YYYY")}
+                    Ngày đi: {moment(quote.departureDate).format("DD/MM/YYYY")}
                   </p>
                   <p>
-                    Điểm đến: {moment(quote.returnDate).format("DD/MM/YYYY")}
+                    Ngày về: {moment(quote.returnDate).format("DD/MM/YYYY")}
                   </p>
+              
                   <p>Tổng giá: {quote.totalPrice.toLocaleString()} VND</p>
                 </Card>
               </Col>
