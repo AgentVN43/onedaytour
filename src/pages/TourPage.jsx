@@ -131,8 +131,8 @@ export default function TourPage() {
         quoteId: `${order?.orderId}-Q${Math.floor(Math.random() * 1000)}`, // Unique Quote ID
         orderId: order?.orderId,
         totalPrice: totalCost,
-        departureDate: details?.date[0],
-        returnDate: details?.date[1],
+        departureDate: tourInfo?.date[0],
+        returnDate: tourInfo?.date[1],
         ...tourInfo,
       };
 
