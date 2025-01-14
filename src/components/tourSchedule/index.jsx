@@ -56,8 +56,8 @@ const TourQuotation = () => {
   const serviceColumns = [
     {
       title: "Dịch vụ",
-      dataIndex: "services",
-      key: "services",
+      dataIndex: "servicesName",
+      key: "servicesName",
     },
     {
       title: "Đơn giá",

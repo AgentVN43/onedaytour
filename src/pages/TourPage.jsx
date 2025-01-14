@@ -52,8 +52,8 @@ export default function TourPage() {
   const { orderId } = useParams();
 
   const data = useSelector((state) => state.orderData.orders); // Get orders from Redux store
-  const [totalCost, setTotalCost] = useState(0);
-  const [mergedData, setMergedData] = useState({});
+  // const [totalCost, setTotalCost] = useState(0);
+  // const [mergedData, setMergedData] = useState({});
   const [details, setDetails] = useState("");
   // Function to get vehicleId based on orderId
   const getVehicleId = (orderId) => {
@@ -70,73 +70,6 @@ export default function TourPage() {
   };
 
   const order = getVehicleId(orderId);
-  useEffect(() => {
-    const details = localStorage.getItem("tourInfo");
-    if (details) {
-      setDetails(JSON.parse(details));
-    }
-  }, []);
-  // const details = JSON.parse(localStorage.getItem("tourInfo"));
-  const totalServiceCost = details.service?.reduce(
-    (total, service) => total + service.prices * (service.quantity || 1),
-    0
-  );
-  console.log("🚀 ~ TourPage ~ totalServiceCost:", totalServiceCost)
-
-  const totalMealCost = details.meals?.reduce((total, meal) => {
-    return (
-      total +
-      meal.sessions?.reduce(
-        (sessionTotal, session) =>
-          sessionTotal +
-          parseInt(session.pricePerPortion || 0) * session.portionCount,
-        0
-      )
-    );
-  }, 0);
-
-  const accomCost = details.accommodation?.provisional;
-  const vehicleCost = details.vehicles?.reduce(
-    (total, vehicle) => total + vehicle.prices,
-    0
-  );
-
-  // useEffect(() => {
-  //   const totalCost =
-  //     totalServiceCost + totalMealCost + accomCost + vehicleCost;
-  // },[]);
-
-  // const mergedData = {
-  //   quoteId: `${order?.orderId}-Q${Math.floor(Math.random() * 1000)}`, // Append Q and a random number
-  //   orderId: order?.orderId,
-  //   totalPrice: totalCost,
-  //   departureDate: details?.date[0],
-  //   returnDate: details?.date[1],
-  //   ...details,
-  // };
-
-  useEffect(() => {
-    // Calculate total cost when dependencies change
-    const calculatedTotalCost =
-      (totalServiceCost || 0) +
-      (totalMealCost || 0) +
-      (accomCost || 0) +
-      (vehicleCost || 0);
-
-    setTotalCost(calculatedTotalCost);
-
-    // Update mergedData based on the calculated totalCost and other dependencies
-    if (order?.orderId && details) {
-      setMergedData({
-        ...details,
-        quoteId: `${order?.orderId}-Q${Math.floor(Math.random() * 1000)}`, // Append Q and a random number
-        orderId: order?.orderId,
-        totalPrice: calculatedTotalCost,
-        departureDate: details?.date[0],
-        returnDate: details?.date[1],
-      });
-    }
-  }, []);
 
   const next = () => {
     setCurrent(current + 1);
@@ -149,11 +82,71 @@ export default function TourPage() {
     setCurrent(stepIndex);
   };
 
+  const calculateTotalCost = (details) => {
+    const totalServiceCost =
+      details?.services?.reduce(
+        (total, service) => total + service.prices * (service.quantity || 1),
+        0
+      ) || 0;
+
+    const totalMealCost =
+      details?.meals?.reduce((total, meal) => {
+        return (
+          total +
+          meal.sessions?.reduce(
+            (sessionTotal, session) =>
+              sessionTotal +
+              parseInt(session.pricePerPortion || 0) *
+                (session.portionCount || 0),
+            0
+          )
+        );
+      }, 0) || 0;
+
+    const accomCost = details?.accommodation?.provisional || 0;
+
+    const vehicleCost =
+      details?.vehicles?.reduce(
+        (total, vehicle) => total + (vehicle.prices || 0),
+        0
+      ) || 0;
+
+    return totalServiceCost + totalMealCost + accomCost + vehicleCost;
+  };
+
   const handleSubmit = async () => {
-    console.log("Collected Data:", mergedData);
-    await quoteService.create(mergedData);
-    message.success("Tour information submitted successfully!");
-    navigate(`/quote/detail/${mergedData?.orderId}`);
+    try {
+      const tourInfo = JSON.parse(localStorage.getItem("tourInfo"));
+      if (!tourInfo) {
+        message.error("Tour information is missing in localStorage.");
+        return;
+      }
+
+      setDetails(tourInfo);
+      console.log("Retrieved Tour Info:", tourInfo);
+
+      const totalCost = calculateTotalCost(tourInfo);
+
+      const mergedData = {
+        quoteId: `${order?.orderId}-Q${Math.floor(Math.random() * 1000)}`, // Unique Quote ID
+        orderId: order?.orderId,
+        totalPrice: totalCost,
+        departureDate: details?.date[0],
+        returnDate: details?.date[1],
+        ...tourInfo,
+      };
+
+      console.log("Merged Data:", mergedData);
+
+      // Uncomment this line once you have your `quoteService` configured
+      await quoteService.create(mergedData);
+
+      message.success("Tour information submitted successfully!");
+      navigate(`/quote/detail/${mergedData?.quoteId}`);
+    } catch (error) {
+      console.error("Error submitting tour information:", error);
+      message.error("An error occurred while submitting tour information.");
+    }
   };
 
   const items = steps.map((item) => ({
