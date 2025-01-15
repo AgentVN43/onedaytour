@@ -18,7 +18,7 @@ const { Title, Text } = Typography;
 export default function VehicleInfo() {
   const [vehicle, setVehicle] = useState([]);
   const [result, setResult] = useState(null);
-
+  const [totalVehicle, setTotalVehicle] = useState(null);
   const tourInfo = JSON.parse(localStorage.getItem("tourInfo"));
   const data = useSelector((state) => state.orderData.orders); // Get orders from Redux store
 
@@ -40,9 +40,104 @@ export default function VehicleInfo() {
     }
   };
 
+  useEffect(() => {
+    if (orderId) {
+      GetAllVehicle();
+    }
+  }, [orderId]);
+
+  // const findOptimalCombination = () => {
+  //   const passengerCount = parseInt(tourInfo?.passengers?.adults || 0) +
+  //     parseInt(tourInfo?.passengers?.childrenUnder11 || 0)
+  //   if (isNaN(passengerCount) || passengerCount <= 0) {
+  //     return { error: "Please enter a valid number of passengers" };
+  //   }
+
+  //   let remainingPassengers = passengerCount;
+  //   const vehicleDistribution = vehicle.map((vehicle) => ({
+  //     ...vehicle,
+  //     count: 0,
+  //     totalSeats: 0,
+  //     priceNew: "", // Add priceNew field for editing
+  //   }));
+
+  //   console.log(vehicleDistribution)
+
+  //   // First pass: Use larger vehicles first
+  //   for (
+  //     let i = 0;
+  //     i < vehicleDistribution.length && remainingPassengers > 0;
+  //     i++
+  //   ) {
+  //     const vehicle = vehicleDistribution[i];
+  //     const neededVehicles = Math.floor(remainingPassengers / vehicle.seat);
+  //     vehicle.count = neededVehicles;
+  //     vehicle.totalSeats = neededVehicles * vehicle.seat;
+  //     remainingPassengers -= vehicle.totalSeats;
+  //   }
+
+  //   // Second pass: Handle remaining passengers with smallest suitable vehicle
+  //   if (remainingPassengers > 0) {
+  //     for (let i = vehicleDistribution.length - 1; i >= 0; i--) {
+  //       const vehicle = vehicleDistribution[i];
+  //       if (vehicle.seat >= remainingPassengers) {
+  //         vehicle.count += 1;
+  //         vehicle.totalSeats += vehicle.seat;
+  //         remainingPassengers = 0;
+  //         break;
+  //       }
+  //     }
+  //   }
+
+  //   // Calculate totals
+  //   const totalVehicles = vehicleDistribution.reduce(
+  //     (sum, v) => sum + v.count,
+  //     0
+  //   );
+  //   const totalCapacity = vehicleDistribution.reduce(
+  //     (sum, v) => sum + v.totalSeats,
+  //     0
+  //   );
+  //   const utilizationRate = ((passengerCount / totalCapacity) * 100).toFixed(1);
+
+  //   setResult({
+  //     distribution: vehicleDistribution,
+  //     totalVehicles,
+  //     totalCapacity,
+  //     passengers: passengerCount,
+  //     utilizationRate,
+  //   });
+  // };
+
+  // Function to find an exact combination of vehicles
+  const findExactCombination = (seats, passengerCount) => {
+    const result = new Array(seats.length).fill(0);
+
+    const backtrack = (index, remaining) => {
+      if (remaining === 0) return true;
+      if (index >= seats.length || remaining < 0) return false;
+
+      // Try using this vehicle
+      const maxCount = Math.floor(remaining / seats[index]);
+      for (let count = maxCount; count >= 0; count--) {
+        result[index] = count;
+        if (backtrack(index + 1, remaining - count * seats[index])) {
+          return true;
+        }
+      }
+
+      result[index] = 0; // Reset
+      return false;
+    };
+
+    return backtrack(0, passengerCount) ? result : null;
+  };
+
   const findOptimalCombination = () => {
-    const passengerCount = parseInt(tourInfo?.passengers?.adults || 0) +
-      parseInt(tourInfo?.passengers?.childrenUnder11 || 0)
+    const passengerCount =
+      parseInt(tourInfo?.passengers?.adults || 0) +
+      parseInt(tourInfo?.passengers?.childrenUnder11 || 0);
+
     if (isNaN(passengerCount) || passengerCount <= 0) {
       return { error: "Please enter a valid number of passengers" };
     }
@@ -52,10 +147,37 @@ export default function VehicleInfo() {
       ...vehicle,
       count: 0,
       totalSeats: 0,
-      priceNew: "", // Add priceNew field for editing
     }));
 
-    // First pass: Use larger vehicles first
+    // Sort vehicles by seat capacity in descending order
+    vehicleDistribution.sort((a, b) => b.seat - a.seat);
+
+    // Step 1: Check for exact match using combinations
+    const seats = vehicleDistribution.map((v) => v.seat);
+
+    const exactMatch = findExactCombination(seats, passengerCount);
+    if (exactMatch) {
+      exactMatch.forEach((count, index) => {
+        vehicleDistribution[index].count = count;
+        vehicleDistribution[index].totalSeats =
+          count * vehicleDistribution[index].seat;
+      });
+      const totalVehicles = exactMatch.reduce((sum, count) => sum + count, 0);
+      const totalCapacity = passengerCount; // Exact match ensures total capacity equals passenger count
+      const utilizationRate = 100.0;
+
+      setResult({
+        distribution: vehicleDistribution,
+        totalVehicles,
+        totalCapacity,
+        passengers: passengerCount,
+        utilizationRate,
+      });
+
+      return;
+    }
+
+    // Step 2: Use larger vehicles first (greedy approach)
     for (
       let i = 0;
       i < vehicleDistribution.length && remainingPassengers > 0;
@@ -68,7 +190,7 @@ export default function VehicleInfo() {
       remainingPassengers -= vehicle.totalSeats;
     }
 
-    // Second pass: Handle remaining passengers with smallest suitable vehicle
+    // Step 3: Handle remaining passengers with the smallest suitable vehicle
     if (remainingPassengers > 0) {
       for (let i = vehicleDistribution.length - 1; i >= 0; i--) {
         const vehicle = vehicleDistribution[i];
@@ -92,13 +214,6 @@ export default function VehicleInfo() {
     );
     const utilizationRate = ((passengerCount / totalCapacity) * 100).toFixed(1);
 
-    // if (remainingPassengers > 0) {
-    //   return {
-    //     error:
-    //       "Cannot accommodate this many passengers with available vehicles",
-    //   };
-    // }
-
     setResult({
       distribution: vehicleDistribution,
       totalVehicles,
@@ -109,15 +224,8 @@ export default function VehicleInfo() {
   };
 
   useEffect(() => {
-    if (orderId) {
-      GetAllVehicle();
-    }
-  }, [orderId]);
-
-  useEffect(() => {
-    findOptimalCombination()
-  }, [vehicle])
-
+    findOptimalCombination();
+  }, [vehicle]);
 
   const handleModalConfirm = () => {
     if (result && !result.error) {
@@ -154,9 +262,39 @@ export default function VehicleInfo() {
     const updatedTableData = result.distribution.map((item) =>
       item._id === record._id ? { ...item, priceNew: value } : item
     );
-    setResult({ ...result, distribution: updatedTableData });
+
+    console.log(updatedTableData);
+    // Recalculate the total price based on updated prices
+
+    const totalPrice = updatedTableData.reduce((sum, v) => {
+      if (v.count > 0) {
+        // Prioritize `priceNew` if it's defined, otherwise fall back to `prices`
+        const price = v.priceNew !== undefined ? v.priceNew : v.prices;
+        return sum + price * v.count; // Multiply by count to account for multiple vehicles
+      }
+      return sum; // No price added if count is 0
+    }, 0); // Start with an initial sum of 0
+
+    setResult({ ...result, distribution: updatedTableData, totalPrice });
   };
 
+  useEffect(() => {
+    // Ensure result is not null or undefined
+    if (result && result.distribution) {
+      const total = result.distribution.reduce((sum, v) => {
+        // Add price * count for vehicles where count > 0
+        if (v.count > 0) {
+          const price = v.priceNew !== undefined ? v.priceNew : v.prices;
+          return sum + price * v.count;
+        }
+        return sum;
+      }, 0);
+      const formattedTotalPrice = Intl.NumberFormat("en-US").format(total);
+
+      // Update totalPrice state
+      setTotalVehicle(formattedTotalPrice);
+    }
+  }, [result]); // Recalculate when `result` changes
   const columns = [
     {
       title: "Loại phương tiện",
@@ -194,7 +332,7 @@ export default function VehicleInfo() {
       render: (text, record) => (
         <Input
           value={record.priceNew}
-          onChange={(e) => handleInputChange(e.target.value, record)}
+          onChange={(e) => handleInputChange(Number(e.target.value), record)}
           placeholder="Nhập giá bán"
         />
       ),
@@ -244,11 +382,14 @@ export default function VehicleInfo() {
               <Text strong>Tổng số ghế: {result.totalCapacity} seats</Text>
               <Text strong>Số lượng hành khách: {result.passengers}</Text>
               <Text strong>Sử dụng: {result.utilizationRate}%</Text>
+              <Text strong>Tạm tính: {totalVehicle}</Text>
             </div>
           </Card>
 
           <Table
-            dataSource={result.distribution}
+            dataSource={result.distribution.filter(
+              (vehicle) => vehicle.count !== 0
+            )}
             columns={columns}
             pagination={false}
             rowKey="_id"

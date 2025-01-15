@@ -111,8 +111,8 @@ const DetailQuotes = ({ onSave }) => {
   const [form] = Form.useForm();
   const { quoteId } = useParams();
   const [isEditable, setIsEditable] = useState(false);
-  const [quoteDetails, setQuoteDetails] = useState({});
-  console.log("🚀 ~ DetailQuotes ~ quoteDetails:", quoteDetails)
+  const [quoteDetails, setQuoteDetails] = useState(null);
+  console.log("🚀 ~ DetailQuotes ~ quoteDetails:", quoteDetails);
 
   const fetchQuote = async () => {
     try {
@@ -123,11 +123,12 @@ const DetailQuotes = ({ onSave }) => {
     }
   };
   useEffect(() => {
-
     if (quoteId) fetchQuote(); // Fetch only if `id` is provided
   }, []);
 
   if (!quoteDetails) return <div>Loading...</div>;
+
+  console.log(quoteDetails);
 
   // Convert date strings to dayjs objects
   const initialValues = {
@@ -135,6 +136,8 @@ const DetailQuotes = ({ onSave }) => {
     departureDate: dayjs(quoteDetails?.departureDate),
     returnDate: dayjs(quoteDetails?.returnDate),
   };
+
+  console.log("This is initial:", initialValues);
 
   const mealData = quoteDetails?.meals?.flatMap((meal) =>
     meal.sessions.map((session) => ({

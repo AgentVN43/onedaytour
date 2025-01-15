@@ -20,7 +20,7 @@ const Orders = () => {
 
   // Get data from Redux store
   const orders = useSelector((state) => state.orderData.orders);
-
+  
   // Fetch all orders on component mount
   useEffect(() => {
     dispatch(fetchOrders());

@@ -2,7 +2,7 @@ import { GET_ORDERS, GET_ORDER_BY_ID } from "../Action/actOrder";
 
 const initialState = {
     orders: [],
-    orderDetails: null,
+    orderDetails: [],
   };
 
   export const orderReducer = (state = initialState, action) => {

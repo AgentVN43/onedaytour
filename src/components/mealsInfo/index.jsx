@@ -1,6 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Collapse, Table, Input, InputNumber, Button, Select, message } from 'antd';
-import { service } from '../../services/service';
+import React, { useState, useEffect } from "react";
+import {
+  Collapse,
+  Table,
+  Input,
+  InputNumber,
+  Button,
+  Select,
+  message,
+} from "antd";
+import { service } from "../../services/service";
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -21,39 +29,44 @@ const getDatesInRange = (startDate, endDate) => {
 const ListMeal = [
   {
     id: 1,
-    name: 'Sáng'
+    name: "Sáng",
   },
   {
     id: 2,
-    name: 'Trưa'
+    name: "Trưa",
   },
   {
     id: 3,
-    name: 'Tối'
+    name: "Tối",
   },
-]
+];
 
 const MealManagement = () => {
-  const [services, setService] = useState([])
+  const [services, setService] = useState([]);
   const infoTraveler = JSON.parse(localStorage.getItem("tourInfo"));
   const [data, setData] = useState([]);
 
   const getServiceCategoryById = async (categoryId) => {
-    const res = await service.getServiceCategoryById(categoryId)
+    const res = await service.getServiceCategoryById(categoryId);
     if (res && res.data) {
-      setService(res.data)
+      setService(res.data);
     }
-  }
+  };
+
+  console.log(services);
 
   useEffect(() => {
-    const dateList = getDatesInRange(infoTraveler.date[0], infoTraveler.date[1]);
+    const dateList = getDatesInRange(
+      infoTraveler.date[0],
+      infoTraveler.date[1]
+    );
     const initialData = dateList.map((date, index) => ({
       key: index,
       date: date,
-      sessions: []
+      sessions: [],
     }));
     setData(initialData);
-    getServiceCategoryById('6761959fd9fad3b6181add09')
+    getServiceCategoryById("6761959fd9fad3b6181add09");
   }, []);
 
   const handleFieldChange = (dayIndex, sessionIndex, field, value) => {
@@ -71,9 +84,9 @@ const MealManagement = () => {
       newData[dayIndex].sessions.push({
         key: `${dayIndex}-${currentSessions}`,
         session: ListMeal[newSessionIndex].name,
-        restaurant: '',
+        restaurant: "",
         portionCount: infoTraveler?.passengers?.total || 0,
-        note: '',
+        note: "",
         // pricePerPortion: '',
       });
       setData(newData);
@@ -90,76 +103,123 @@ const MealManagement = () => {
   const renderSessionTable = (sessions, dayIndex) => {
     const columns = [
       {
-        title: 'Buổi', dataIndex: 'session', key: 'session', render: (text, _, index) => (
-          <Select value={text} onChange={(value) => handleFieldChange(dayIndex, index, 'session', value)}>
+        title: "Buổi",
+        dataIndex: "session",
+        key: "session",
+        render: (text, _, index) => (
+          <Select
+            value={text}
+            onChange={(value) =>
+              handleFieldChange(dayIndex, index, "session", value)
+            }
+          >
             {ListMeal.map((item, index) => (
-              <Option key={`${item.id} - ${index}`} value={item.name}>{item.name}</Option>
+              <Option key={`${item.id} - ${index}`} value={item.name}>
+                {item.name}
+              </Option>
             ))}
           </Select>
-        )
+        ),
       },
       {
-        title: 'Số phần', dataIndex: 'portionCount', key: 'portionCount', render: (text, _, index) => (
+        title: "Số phần",
+        dataIndex: "portionCount",
+        key: "portionCount",
+        render: (text, _, index) => (
           <InputNumber
             min={0}
             value={text || infoTraveler?.passengers || 0}
-            onChange={(value) => handleFieldChange(dayIndex, index, "portionCount", value)}
+            onChange={(value) =>
+              handleFieldChange(dayIndex, index, "portionCount", value)
+            }
           />
-        )
+        ),
       },
       {
-        title: 'Giá (VND/phần)', dataIndex: 'pricePerPortion', key: 'pricePerPortion', render: (text, _, index) => (
-          <Select placeholder='Chọn bữa ăn' value={text} onChange={(value) => handleFieldChange(dayIndex, index, 'pricePerPortion', value)}>
+        title: "Giá (VND/phần)",
+        dataIndex: "pricePerPortion",
+        key: "pricePerPortion",
+        render: (text, _, index) => (
+          <Select
+            placeholder="Chọn bữa ăn"
+            value={text}
+            onChange={(value) =>
+              handleFieldChange(dayIndex, index, "pricePerPortion", value)
+            }
+          >
             {services.map((item, index) => (
-              <Option key={`${item.id} - ${index}`} value={item._id}>{item.services}</Option>
+              <Option key={`${item.id} - ${index}`} value={item._id}>
+                {item.servicesName}
+              </Option>
             ))}
           </Select>
-        )
+        ),
       },
       {
-        title: 'Nhà hàng (nếu có)', dataIndex: 'restaurant', key: 'restaurant', render: (text, _, index) => (
+        title: "Nhà hàng (nếu có)",
+        dataIndex: "restaurant",
+        key: "restaurant",
+        render: (text, _, index) => (
           <Input
             placeholder="Nhập tên nhà hàng"
             value={text}
-            onChange={(e) => handleFieldChange(dayIndex, index, 'restaurant', e.target.value)}
+            onChange={(e) =>
+              handleFieldChange(dayIndex, index, "restaurant", e.target.value)
+            }
           />
-        )
+        ),
       },
       {
-        title: 'Ghi chú', dataIndex: 'note', key: 'note', render: (text, _, index) => (
+        title: "Ghi chú",
+        dataIndex: "note",
+        key: "note",
+        render: (text, _, index) => (
           <Input
             placeholder="Nhập ghi chú"
             value={text}
-            onChange={(e) => handleFieldChange(dayIndex, index, 'note', e.target.value)}
+            onChange={(e) =>
+              handleFieldChange(dayIndex, index, "note", e.target.value)
+            }
           />
-        )
+        ),
       },
       {
-        title: 'Thao tác',
-        key: 'action',
+        title: "Thao tác",
+        key: "action",
         render: (_, __, sessionIndex) => (
-          <Button type="link" onClick={() => deleteSession(dayIndex, sessionIndex)}>Xóa</Button>
+          <Button
+            type="link"
+            onClick={() => deleteSession(dayIndex, sessionIndex)}
+          >
+            Xóa
+          </Button>
         ),
       },
     ];
 
-    return <Table columns={columns} dataSource={sessions} pagination={false} rowKey="session" />;
+    return (
+      <Table
+        columns={columns}
+        dataSource={sessions}
+        pagination={false}
+        rowKey="session"
+      />
+    );
   };
   const handleConfirmMeals = () => {
-    const confirmedData = { ...infoTraveler, meals: data }
-
+    const confirmedData = { ...infoTraveler, meals: data };
 
     localStorage.setItem("tourInfo", JSON.stringify(confirmedData));
-
+    console.log(confirmedData)
     message.success("Meals data saved successfully");
   };
   return (
-    <div>
-      <Collapse >
+    <>
+      <Collapse>
         {data.map((day, dayIndex) => (
           <Panel header={`Ngày: ${day.date}`} key={day.key}>
             {renderSessionTable(day.sessions, dayIndex)}
-            <div className='flex items-center justify-center'>
+            <div className="flex items-center justify-center">
               <Button
                 onClick={() => addSession(dayIndex)}
                 type="dashed"
@@ -171,13 +231,21 @@ const MealManagement = () => {
           </Panel>
         ))}
       </Collapse>
-      <div className='flex items-center justify-center mb-4'>
-        <Button type="primary" onClick={handleConfirmMeals} style={{ marginTop: '16px' }}>
+      <div className="flex items-center justify-center">
+        <p>Tạm tính: </p>
+      </div>
+
+      <div className="flex items-center justify-center mb-4">
+        <Button
+          type="primary"
+          onClick={handleConfirmMeals}
+          style={{ marginTop: "16px" }}
+        >
           Xác nhận tạo bữa ăn
         </Button>
       </div>
-    </div>
+    </>
   );
 };
 
-export default MealManagement
+export default MealManagement;
